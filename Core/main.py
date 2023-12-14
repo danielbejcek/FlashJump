@@ -5,9 +5,9 @@ import pygame
 class Game:
     def __init__(self):
         self.img_paths = {
-            "BG_image": "D:\Documents\PyCharm projects\PyCharm projects\PyGame\FlashJump\Images\BG_MAIN.png",
-            "particle_img1": "D:\Documents\PyCharm projects\PyCharm projects\PyGame\FlashJump\Images\Particles\leaf_particle_1.png",
-            "character_img": "D:\Documents\PyCharm projects\PyCharm projects\PyGame\FlashJump\Images\Character\character.png",
+            "BG_image": "..\Images\BG_MAIN.png",
+            "particle_img1": "..\Images\Particles\leaf_particle_1.png",
+            "character_img": "..\Images\Character\character.png",
 
         }
         pygame.init()

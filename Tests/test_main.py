@@ -44,7 +44,7 @@ class TestGameWindow(unittest.TestCase):
         mock_set_caption.assert_called_once_with("FlashJump")
 
         mock_load.assert_any_call(self.test_bg_img)
-        self.assertEqual(self.test_bg_img,"D:\Documents\PyCharm projects\PyCharm projects\PyGame\FlashJump\Images\BG_MAIN.png")
+        self.assertEqual(self.test_bg_img,"..\Images\BG_MAIN.png")
 
 
 
