@@ -1,13 +1,16 @@
 import sys
 import pygame
+import os
+
 
 
 class Game:
     def __init__(self):
         self.img_paths = {
-            "BG_image": "..\Images\BG_MAIN.png",
-            "particle_img1": "..\Images\Particles\leaf_particle_1.png",
-            "character_img": "..\Images\Character\character.png",
+
+            "BG_image": "Images\BG_MAIN.png",
+            "particle_img1": "Images\Particles\leaf_particle_1.png",
+            "character_img": "Images\Character\character.png",
 
         }
         pygame.init()
@@ -29,8 +32,9 @@ class Game:
             """Main background image"""
             self.screen.blit(self.bg_img, (0,0))
 
-
+            """Y axis position"""
             self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * 5
+            """X axis position"""
             self.img_pos[0] += (self.movement_x[1] - self.movement_x[0]) * 5
 
             img_rect = pygame.Rect(self.img_pos[0], self.img_pos[1], self.character_img.get_width(), self.character_img.get_height())
@@ -48,12 +52,12 @@ class Game:
                     sys.exit()
 
                 if event.type == pygame.KEYDOWN:
-                    """Y Axis"""
+                    """Y axis"""
                     if event.key == pygame.K_w:
                         self.movement_y[0] = True
                     if event.key == pygame.K_s:
                         self.movement_y[1] = True
-                    """X Axis"""
+                    """X axis"""
                     if event.key == pygame.K_a:
 
                         self.movement_x[0] = True
@@ -61,12 +65,12 @@ class Game:
                         self.movement_x[1] = True
 
                 if event.type == pygame.KEYUP:
-                    """Y Axis"""
+                    """Y axis"""
                     if event.key == pygame.K_w:
                         self.movement_y[0] = False
                     if event.key == pygame.K_s:
                         self.movement_y[1] = False
-                    """X Axis"""
+                    """X axis"""
                     if event.key == pygame.K_a:
                         self.movement_x[0] = False
                     if event.key == pygame.K_d:

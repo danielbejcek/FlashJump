@@ -3,13 +3,22 @@ from unittest.mock import Mock
 from unittest.mock import patch, MagicMock
 import pygame
 import sys
+import os
 from Core import main
 
 class TestGameWindow(unittest.TestCase):
 
     def setUp(self):
-        self.ref_images = main.Game().img_paths
-        self.test_bg_img = self.ref_images["BG_image"]
+        self.original_directory = os.getcwd()
+        os.chdir("D:\\Documents\\PyCharm projects\\PyCharm projects\\PyGame\\FlashJump\\Core")
+
+        self.game = main.Game()
+        self.images_ref = self.game.img_paths
+        self.test_bg_img = self.images_ref["BG_image"]
+
+
+    def tearDown(self):
+        os.chdir(self.original_directory)
 
     @patch('pygame.image.load')
     @patch('pygame.display.set_caption')
@@ -41,8 +50,9 @@ class TestGameWindow(unittest.TestCase):
         mock_set_caption.assert_called_once_with("FlashJump")
 
         mock_load.assert_any_call(self.test_bg_img)
-        self.assertEqual(self.test_bg_img,"..\Images\BG_MAIN.png")
+        self.assertEqual(self.test_bg_img,"Images\BG_MAIN.png")
 
 
 
-
+if __name__ == "__main__":
+    unittest.TestCase()
