@@ -26,14 +26,14 @@ class Game:
     def run(self):
 
         while True:
+            """Main background image"""
             self.screen.blit(self.bg_img, (0,0))
+
 
             self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * 5
             self.img_pos[0] += (self.movement_x[1] - self.movement_x[0]) * 5
 
-
             img_rect = pygame.Rect(self.img_pos[0], self.img_pos[1], self.character_img.get_width(), self.character_img.get_height())
-
 
             if img_rect.colliderect(self.collision_area):
                 pygame.draw.rect(self.screen,(0,10,255),self.collision_area)
@@ -46,6 +46,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
                 if event.type == pygame.KEYDOWN:
                     """Y Axis"""
                     if event.key == pygame.K_w:
@@ -59,18 +60,17 @@ class Game:
                     if event.key == pygame.K_d:
                         self.movement_x[1] = True
 
-
-
                 if event.type == pygame.KEYUP:
+                    """Y Axis"""
                     if event.key == pygame.K_w:
                         self.movement_y[0] = False
                     if event.key == pygame.K_s:
                         self.movement_y[1] = False
+                    """X Axis"""
                     if event.key == pygame.K_a:
                         self.movement_x[0] = False
                     if event.key == pygame.K_d:
                         self.movement_x[1] = False
-
 
             pygame.display.update()
             self.clock.tick(60)
