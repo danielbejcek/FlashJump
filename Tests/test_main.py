@@ -4,6 +4,8 @@ from unittest.mock import Mock
 from unittest.mock import patch, MagicMock
 import pygame
 import sys
+from Core import main
+
 
 
 class TestGameWindow(unittest.TestCase):
