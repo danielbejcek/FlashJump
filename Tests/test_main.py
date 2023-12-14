@@ -10,7 +10,7 @@ class TestGameWindow(unittest.TestCase):
 
     def setUp(self):
         self.original_directory = os.getcwd()
-        os.chdir("D:\\Documents\\PyCharm projects\\PyCharm projects\\PyGame\\FlashJump\\Core")
+        os.chdir("D:\Documents\PyCharm projects\PyCharm projects\PyGame\FlashJump\Core")
 
         self.game = main.Game()
         self.images_ref = self.game.img_paths
