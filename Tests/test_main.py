@@ -4,13 +4,14 @@ from unittest.mock import patch, MagicMock
 import pygame
 import sys
 import os
-from Core import main
+from Main import main
 
 class TestGameWindow(unittest.TestCase):
 
     def setUp(self):
         self.original_directory = os.getcwd()
-        os.chdir("D:\Documents\PyCharm projects\PyCharm projects\PyGame\FlashJump\Core")
+        core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
+        os.chdir(core_path)
 
         self.game = main.Game()
         self.images_ref = self.game.img_paths

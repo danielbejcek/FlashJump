@@ -8,9 +8,8 @@ class Game:
     def __init__(self):
         self.img_paths = {
 
-            "BG_image": "Images\BG_MAIN.png",
-            "particle_img1": "Images\Particles\leaf_particle_1.png",
-            "character_img": "Images\Character\character.png",
+            "BG_image": os.path.join("Images","BG_MAIN.png"),
+            "character_img": os.path.join("Images","Character","character.png"),
 
         }
         pygame.init()
