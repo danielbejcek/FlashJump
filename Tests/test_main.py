@@ -6,6 +6,7 @@ import sys
 import os
 from Main import main
 
+"""In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
 original_directory = os.getcwd()
 core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
 os.chdir(core_path)
@@ -13,18 +14,13 @@ os.chdir(core_path)
 class TestGameWindow(unittest.TestCase):
 
     def setUp(self):
-        """In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
-        # self.original_directory = os.getcwd()
-        # core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
-        # os.chdir(core_path)
-
         self.game = main.Game()
         self.images_ref = self.game.img_paths
         self.test_bg_img = self.images_ref["BG_image"]
 
 
     def tearDown(self):
-        # os.chdir(self.original_directory)
+
         pass
     @patch('pygame.image.load')
     @patch('pygame.display.set_caption')
@@ -57,7 +53,7 @@ class TestGameWindow(unittest.TestCase):
 
         # Background image is loaded according to the pygame.image.load function
         mock_load.assert_any_call(self.test_bg_img)
-        self.assertEqual(self.test_bg_img,"Images\BG_MAIN.png")
+        self.assertEqual(self.test_bg_img,os.path.join("Images","BG_MAIN.png"))
 
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
