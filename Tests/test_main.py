@@ -57,7 +57,7 @@ class TestGameWindow(unittest.TestCase):
 
         # Background image is loaded according to the pygame.image.load function
         mock_load.assert_any_call(self.test_bg_img)
-        self.assertEqual(self.test_bg_img,"Images\\BG_MAIN.png")
+        self.assertEqual(self.test_bg_img,"Images\BG_MAIN.png")
 
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
