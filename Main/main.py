@@ -25,9 +25,11 @@ class Game:
         self.img_pos = [160,260]
         self.collision_area = pygame.Rect(200,100,100,100)
 
-    def run(self):
+    def run(self,test_case = False):
+        max_iterations = 5
+        iteration = 0
 
-        while True:
+        while True and iteration < max_iterations:
             """Main background image"""
             self.screen.blit(self.bg_img, (0,0))
 
@@ -58,7 +60,6 @@ class Game:
                         self.movement_y[1] = True
                     """X axis"""
                     if event.key == pygame.K_a:
-
                         self.movement_x[0] = True
                     if event.key == pygame.K_d:
                         self.movement_x[1] = True
@@ -77,6 +78,8 @@ class Game:
 
             pygame.display.update()
             self.clock.tick(60)
+            if test_case == True:
+                iteration += 1
 
 
 if __name__ == "__main__":
