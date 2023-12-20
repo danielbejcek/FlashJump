@@ -7,18 +7,18 @@ import sys
 from Main import main
 from Images.images import img_paths
 
-"""In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
-original_directory = os.getcwd()
-core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
-os.chdir(core_path)
-
+# """In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
+# original_directory = os.getcwd()
+# core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
+# os.chdir(core_path)
+current_dir = os.path.dirname(__file__)
 
 class TestGameWindow(unittest.TestCase):
 
     def setUp(self):
         self.game = main.Game()
-        self.images_ref = img_paths
-        self.test_bg_img = self.images_ref["BG_image"]
+        self.test_bg_img = img_paths["BG_image"]
+        self.test_char_img = img_paths["character_img"]
 
 
     def tearDown(self):
@@ -55,7 +55,8 @@ class TestGameWindow(unittest.TestCase):
 
         # Background image is loaded according to the pygame.image.load function
         mock_load.assert_any_call(self.test_bg_img)
-        self.assertEqual(self.test_bg_img,os.path.join("D:\Documents\PyCharm projects\PyCharm projects\PyGame\FlashJump\Images\BG_MAIN.png"))
+        mock_load.assert_any_call(self.test_char_img)
+
 
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
