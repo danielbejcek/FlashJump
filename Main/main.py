@@ -1,31 +1,31 @@
 import sys
 import pygame
 import os
+from Images.images import img_paths
+
 
 
 
 class Game:
     def __init__(self):
-        self.img_paths = {
 
-            "BG_image": os.path.join("Images","BG_MAIN.png"),
-            "character_img": os.path.join("Images","Character","character.png"),
-
-        }
         pygame.init()
         self.screen = pygame.display.set_mode((1792, 1024))
         pygame.display.set_caption("FlashJump")
         self.clock = pygame.time.Clock()
 
-        self.bg_img = pygame.image.load(self.img_paths["BG_image"])
-        self.character_img = pygame.image.load(self.img_paths["character_img"])
+        self.bg_img = pygame.image.load(img_paths["BG_image"]).convert()
+        self.character_img = pygame.image.load(img_paths["character_img"])
 
         self.movement_y = [False, False]
         self.movement_x = [False, False]
         self.img_pos = [160,260]
         self.collision_area = pygame.Rect(200,100,100,100)
 
+
+
     def run(self,test_case = False):
+        """Setting up the test case scenario to a limited number of loop iterations."""
         max_iterations = 5
         iteration = 0
 

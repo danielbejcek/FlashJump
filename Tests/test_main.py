@@ -1,27 +1,29 @@
+import os
 import unittest
 from unittest.mock import Mock
 from unittest.mock import patch, MagicMock
 import pygame
 import sys
-import os
 from Main import main
+from Images.images import img_paths
 
-"""In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
-original_directory = os.getcwd()
-core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
-os.chdir(core_path)
+# """In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
+# original_directory = os.getcwd()
+# core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
+# os.chdir(core_path)
+
 
 class TestGameWindow(unittest.TestCase):
 
     def setUp(self):
         self.game = main.Game()
-        self.images_ref = self.game.img_paths
+        self.images_ref = img_paths
         self.test_bg_img = self.images_ref["BG_image"]
 
 
     def tearDown(self):
-
         pass
+
     @patch('pygame.image.load')
     @patch('pygame.display.set_caption')
     @patch('pygame.display.set_mode')
@@ -53,7 +55,7 @@ class TestGameWindow(unittest.TestCase):
 
         # Background image is loaded according to the pygame.image.load function
         mock_load.assert_any_call(self.test_bg_img)
-        self.assertEqual(self.test_bg_img,os.path.join("Images","BG_MAIN.png"))
+        self.assertEqual(self.test_bg_img,os.path.join("D:\Documents\PyCharm projects\PyCharm projects\PyGame\FlashJump\Images\BG_MAIN.png"))
 
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
@@ -95,7 +97,3 @@ class TestCharacterMovement(unittest.TestCase):
         mock_event_key.key = key
         return mock_event_key
 
-
-
-if __name__ == "__main__":
-    unittest.TestCase()
