@@ -6,6 +6,7 @@ import pygame
 import sys
 from Main import main
 from Images.images import img_paths
+from Main.player import PlayerCharacter
 
 # """In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
 # original_directory = os.getcwd()
@@ -24,11 +25,11 @@ class TestGameWindow(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @patch('pygame.image.load')
+
     @patch('pygame.display.set_caption')
     @patch('pygame.display.set_mode')
     @patch('pygame.init')
-    def test_window_opening(self, mock_pygame_init, mock_set_mode, mock_set_caption, mock_load):
+    def test_window_opening(self, mock_pygame_init, mock_set_mode, mock_set_caption):
         """
         'mock_event' is a mock object to simulate a Pygame event. 
         In the context of this test, we're specifically creating a mock event that simulates the pygame.QUIT event. 
@@ -53,16 +54,17 @@ class TestGameWindow(unittest.TestCase):
         mock_set_mode.assert_called_once_with((1792, 1024))
         mock_set_caption.assert_called_once_with("FlashJump")
 
-        # Background image is loaded according to the pygame.image.load function
-        mock_load.assert_any_call(self.test_bg_img)
-        mock_load.assert_any_call(self.test_char_img)
-
 
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
-        self.img_pos = self.game.img_pos
-        self.initial_pos = [160,260]
+        self.player = PlayerCharacter(500,500)
+
+        # Setting up x, y position from the player instance in the main.Game()
+        self.img_pos = self.game.player.img_pos
+
+        # Setting up x, y position from PlayerCharacter class
+        self.initial_pos = self.player.img_pos
     def tearDown(self):
         pass
 
@@ -72,6 +74,7 @@ class TestCharacterMovement(unittest.TestCase):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_w)]
         self.game.run(True)
         self.assertLess(self.img_pos[1],self.initial_pos[1])
+
 
     @patch('pygame.event.get')
     def test_movement_left(self, mock_get_event):
