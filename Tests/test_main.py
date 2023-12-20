@@ -7,10 +7,10 @@ import sys
 from Main import main
 from Images.images import img_paths
 
-# """In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
-# original_directory = os.getcwd()
-# core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
-# os.chdir(core_path)
+"""In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
+original_directory = os.getcwd()
+core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
+os.chdir(core_path)
 
 
 class TestGameWindow(unittest.TestCase):
