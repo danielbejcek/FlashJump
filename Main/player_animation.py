@@ -1,12 +1,16 @@
 import pygame
 import os
 
+current_dir = os.path.dirname(__file__)
+img_path = os.path.join(current_dir,'..','Images','Characters','Player'),
 def animate_character(action):
     animation_list = []
     temp_list = []
 
-    for i in os.listdir(f'../Images/Characters/Player/{action}'):
-        img = pygame.image.load(f'../Images/Characters/Player/{action}/{i}')
+    # for i in os.listdir(f'../Images/Characters/Player/{action}'):
+    for i in os.listdir(os.path.join(current_dir,'..','Images','Characters','Player',action)):
+        img = pygame.image.load(os.path.join(current_dir,'..','Images','Characters','Player',action,i))
+        # img = pygame.image.load(f'../Images/Characters/Player/{action}/{i}')
         img = pygame.transform.scale(img, (int(img.get_width() // .7), (int(img.get_height() // .7))))
 
         if action == 'Idle':
