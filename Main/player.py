@@ -3,6 +3,8 @@ import os
 import sys
 from Images.images import img_paths
 from Main.player_animation import animate_character
+from Main.Collisions import draw_floor
+
 
 class PlayerCharacter(pygame.sprite.Sprite):
     screen = pygame.display.set_mode((1792, 1024))
@@ -17,6 +19,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.frame_index = 0
         self.update_time = pygame.time.get_ticks()
 
+        self.jump = False
+        self.jump_velocity = -15
         self.movement_y = [False, False]
         self.movement_x = [False, False]
         self.img_pos = [x, y]
@@ -34,12 +38,13 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
     def player_movement(self):
         """Y axis position"""
-        self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * 4
+        self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * 1
 
         """X axis position"""
         self.img_pos[0] += (self.movement_x[1] - self.movement_x[0]) * 4
-
+        # self.movement_y[1] = True
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -51,16 +56,21 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
                 """X axis"""
                 if event.key == pygame.K_a:
-                    self.action = 'Running'
                     self.movement_x[0] = True
                     self.flip = True
                     self.motion_left = True
 
                 if event.key == pygame.K_d:
-                    self.action = 'Running'
                     self.movement_x[1] = True
                     self.flip = False
                     self.motion_right = True
+
+                if event.key == pygame.K_SPACE:
+                    self.action = 'Jump'
+                    # self.movement_y[1] = False
+                    # self.movement_y[0] = True
+
+
 
                 if self.motion_right and self.motion_left:
                     self.action = 'Idle'
@@ -79,13 +89,19 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         self.flip = False
                         self.action = 'Running'
 
-
                 if event.key == pygame.K_d:
                     self.motion_right = False
                     self.movement_x[1] = False
                     if self.motion_left:
                         self.flip = True
                         self.action = 'Running'
+
+                if event.key == pygame.K_SPACE:
+                    # self.action = 'Jump'
+                    self.jump = False
+                    self.movement_y[0] = False
+                    # self.movement_y[1] = True
+
 
 
     def update_animation(self):

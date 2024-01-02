@@ -3,6 +3,7 @@ import pygame
 import os
 from Images.images import img_paths
 from Main.player import PlayerCharacter
+from Main.Collisions import draw_floor
 
 class Game:
     def __init__(self):
@@ -22,8 +23,9 @@ class Game:
         while True and iteration < max_iterations:
 
             """Main background image"""
-            self.screen.blit(self.bg_img, (0,0))
 
+            self.screen.blit(self.bg_img, (0,0))
+            draw_floor()
             self.player.update_animation()
 
             """Player character image"""
