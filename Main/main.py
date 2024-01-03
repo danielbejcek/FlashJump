@@ -12,7 +12,7 @@ class Game:
         pygame.display.set_caption("FlashJump")
         self.clock = pygame.time.Clock()
         self.bg_img = pygame.image.load(img_paths["BG_image"]).convert()
-        self.player = PlayerCharacter(500,500)
+        self.player = PlayerCharacter(500,770)
 
 
     def run(self,test_case = False):
@@ -23,8 +23,8 @@ class Game:
         while True and iteration < max_iterations:
 
             """Main background image"""
-
             self.screen.blit(self.bg_img, (0,0))
+
             draw_floor()
             self.player.update_animation()
 

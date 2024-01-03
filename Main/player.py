@@ -10,6 +10,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
     screen = pygame.display.set_mode((1792, 1024))
     def __init__(self, x,y):
         pygame.sprite.Sprite.__init__(self)
+        """Character is starting in an 'Idle' animation"""
         self.action = 'Idle'
 
         """Serves as a divider between actions. 0 is for idle, 1 is for running"""
@@ -20,11 +21,14 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.update_time = pygame.time.get_ticks()
 
         self.jump = False
-        self.jump_velocity = -15
-        self.movement_y = [False, False]
+        self.jump_start_time = None
+        self.jump_duration = 800
+        self.movement_y = [False, True]
         self.movement_x = [False, False]
         self.img_pos = [x, y]
         self.flip = False
+
+        self.floor_test = 770
 
         """
         Variables that help control the movement of the character. When user presses 'Key_A' to run left and right after 'Key_D' to run right,
@@ -37,70 +41,112 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.screen.blit(pygame.transform.flip(self.image, self.flip, False), self.img_pos)
 
     def player_movement(self):
-        """Y axis position"""
-        self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * 1
-
         """X axis position"""
         self.img_pos[0] += (self.movement_x[1] - self.movement_x[0]) * 4
-        # self.movement_y[1] = True
-        for event in pygame.event.get():
 
+        """Y axis position"""
+        self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * 4
+
+        """Check condition to verify if character is touching the ground"""
+        if self.img_pos[1] >= self.floor_test:
+            self.jump = False
+            self.img_pos[1] = self.floor_test
+            # if not any(pygame.key.get_pressed()):
+            #     self.action = 'Idle'
+            #     self.frame_index = 0
+            #     self.action_divider = 0
+
+
+        """Main player movement loop"""
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.KEYDOWN:
-                self.action = 'Running'
-                self.action_divider = 1
-                self.frame_index = 0
 
-                """X axis"""
-                if event.key == pygame.K_a:
-                    self.movement_x[0] = True
-                    self.flip = True
-                    self.motion_left = True
-
-                if event.key == pygame.K_d:
-                    self.movement_x[1] = True
-                    self.flip = False
-                    self.motion_right = True
-
-                if event.key == pygame.K_SPACE:
-                    self.action = 'Jump'
-                    # self.movement_y[1] = False
-                    # self.movement_y[0] = True
-
-
-
-                if self.motion_right and self.motion_left:
+            if self.jump == False:
+                if not any(pygame.key.get_pressed()):
                     self.action = 'Idle'
+                    self.frame_index = 0
+                    self.action_divider = 0
 
+                if event.type == pygame.KEYDOWN:
+                    self.action = 'Running'
+                    self.action_divider = 1
+                    self.frame_index = 0
 
-            if event.type == pygame.KEYUP:
-                self.action = 'Idle'
-                self.action_divider = 0
-                self.frame_index = 0
-
-                """X axis"""
-                if event.key == pygame.K_a:
-                    self.motion_left = False
-                    self.movement_x[0] = False
-                    if self.motion_right:
-                        self.flip = False
-                        self.action = 'Running'
-
-                if event.key == pygame.K_d:
-                    self.motion_right = False
-                    self.movement_x[1] = False
-                    if self.motion_left:
+                    """X axis"""
+                    if event.key == pygame.K_a:
+                        self.movement_x[0] = True
                         self.flip = True
-                        self.action = 'Running'
+                        self.motion_left = True
 
-                if event.key == pygame.K_SPACE:
-                    # self.action = 'Jump'
-                    self.jump = False
-                    self.movement_y[0] = False
-                    # self.movement_y[1] = True
+                    if event.key == pygame.K_d:
+                        self.movement_x[1] = True
+                        self.flip = False
+                        self.motion_right = True
+
+                    """Y axis"""
+                    if event.key == pygame.K_SPACE:
+                        self.jump = True
+                        self.movement_y[0] = True
+                        self.jump_start_time = pygame.time.get_ticks()
+
+                    if self.motion_right and self.motion_left:
+                        self.action = 'Idle'
+
+                if event.type == pygame.KEYUP:
+                    self.action = 'Idle'
+                    """X axis"""
+                    if event.key == pygame.K_a:
+                        self.motion_left = False
+                        self.movement_x[0] = False
+                        if self.motion_right:
+                            self.flip = False
+                            self.action = 'Running'
+                            self.action_divider = 1
+                            self.frame_index = 0
+
+                    if event.key == pygame.K_d:
+                        self.motion_right = False
+                        self.movement_x[1] = False
+                        if self.motion_left:
+                            self.flip = True
+                            self.action = 'Running'
+                            self.action_divider = 1
+                            self.frame_index = 0
+
+
+            if self.jump == True:
+                if event.type == pygame.KEYDOWN:
+                    self.frame_index = 0
+                    self.action_divider = 2
+                    self.action = 'Jump'
+
+                    """X axis"""
+                    if event.key == pygame.K_a:
+                        self.movement_x[0] = True
+                        self.flip = True
+                        self.motion_left = True
+
+                    if event.key == pygame.K_d:
+                        self.movement_x[1] = True
+                        self.flip = False
+                        self.motion_right = True
+
+                if event.type == pygame.KEYUP:
+                    """X axis"""
+                    if event.key == pygame.K_a:
+                        self.motion_left = False
+                        self.movement_x[0] = False
+                        if self.motion_right:
+                            self.flip = False
+
+                    if event.key == pygame.K_d:
+                        self.motion_right = False
+                        self.movement_x[1] = False
+                        if self.motion_left:
+                            self.flip = True
 
 
 
@@ -120,5 +166,18 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Once 'self.frame_index' reaches the final element in the 'animation_list', it starts over from index 0 to maintain fluent animation."""
         if self.frame_index >= len(animate_character(self.action)[self.action_divider]):
             self.frame_index = 0
+
+        if self.jump_start_time is not None:
+            current_time = pygame.time.get_ticks()
+
+            """Increase Y axis while jump is active"""
+            self.movement_y[1] = False
+
+            if current_time - self.jump_start_time > self.jump_duration:
+                """Once jump animation is finished, apply gravity with 'self.movement[1] = True' again"""
+                self.movement_y[0] = False
+                self.movement_y[1] = True
+                self.jump_start_time = None
+
 
 
