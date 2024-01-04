@@ -51,11 +51,18 @@ class PlayerCharacter(pygame.sprite.Sprite):
         if self.img_pos[1] >= self.floor_test:
             self.jump = False
             self.img_pos[1] = self.floor_test
-            # if not any(pygame.key.get_pressed()):
-            #     self.action = 'Idle'
-            #     self.frame_index = 0
-            #     self.action_divider = 0
 
+            if not any(pygame.key.get_pressed()):
+                self.action = 'Idle'
+                self.action_divider = 0
+
+            if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
+                self.action = 'Running'
+                self.action_divider = 1
+
+            if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
+                self.action = 'Idle'
+                self.action_divider = 0
 
         """Main player movement loop"""
         for event in pygame.event.get():
@@ -65,15 +72,9 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
 
             if self.jump == False:
-                if not any(pygame.key.get_pressed()):
-                    self.action = 'Idle'
-                    self.frame_index = 0
-                    self.action_divider = 0
-
                 if event.type == pygame.KEYDOWN:
                     self.action = 'Running'
                     self.action_divider = 1
-                    self.frame_index = 0
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -89,39 +90,29 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     """Y axis"""
                     if event.key == pygame.K_SPACE:
                         self.jump = True
-                        self.movement_y[0] = True
                         self.jump_start_time = pygame.time.get_ticks()
-
-                    if self.motion_right and self.motion_left:
-                        self.action = 'Idle'
 
                 if event.type == pygame.KEYUP:
                     self.action = 'Idle'
+                    self.action_divider = 0
+
                     """X axis"""
                     if event.key == pygame.K_a:
                         self.motion_left = False
                         self.movement_x[0] = False
                         if self.motion_right:
                             self.flip = False
-                            self.action = 'Running'
-                            self.action_divider = 1
-                            self.frame_index = 0
 
                     if event.key == pygame.K_d:
                         self.motion_right = False
                         self.movement_x[1] = False
                         if self.motion_left:
                             self.flip = True
-                            self.action = 'Running'
-                            self.action_divider = 1
-                            self.frame_index = 0
-
 
             if self.jump == True:
                 if event.type == pygame.KEYDOWN:
-                    self.frame_index = 0
-                    self.action_divider = 2
                     self.action = 'Jump'
+                    self.action_divider = 2
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -159,6 +150,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         and 'self.frame_index' which allows the animation to always start from index 0 whenever a new action is introduced.
         """
         self.image = animate_character(self.action)[self.action_divider][self.frame_index]
+
         if pygame.time.get_ticks() - self.update_time > ANIMATION_COOLDOWN:
             self.update_time = pygame.time.get_ticks()
             self.frame_index += 1
@@ -169,9 +161,9 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         if self.jump_start_time is not None:
             current_time = pygame.time.get_ticks()
-
             """Increase Y axis while jump is active"""
             self.movement_y[1] = False
+            self.movement_y[0] = True
 
             if current_time - self.jump_start_time > self.jump_duration:
                 """Once jump animation is finished, apply gravity with 'self.movement[1] = True' again"""
