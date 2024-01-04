@@ -12,12 +12,12 @@ class Game:
         pygame.display.set_caption("FlashJump")
         self.clock = pygame.time.Clock()
         self.bg_img = pygame.image.load(img_paths["BG_image"]).convert()
-        self.player = PlayerCharacter(500,770)
+        self.player = PlayerCharacter(600,770)
 
 
     def run(self,test_case = False):
         """Setting up a test case scenario to a limited number of loop iterations."""
-        max_iterations = 5
+        max_iterations = 20
         iteration = 0
 
         while True and iteration < max_iterations:

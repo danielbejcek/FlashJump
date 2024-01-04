@@ -7,6 +7,7 @@ import sys
 from Main import main
 from Images.images import img_paths
 from Main.player import PlayerCharacter
+from Main.player_animation import animate_character
 
 # """In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
 # original_directory = os.getcwd()
@@ -58,7 +59,7 @@ class TestGameWindow(unittest.TestCase):
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
-        self.player = PlayerCharacter(500,500)
+        self.player = PlayerCharacter(600,500)
 
         # Setting up x, y position from the player instance in the main.Game()
         self.img_pos = self.game.player.img_pos
@@ -68,12 +69,11 @@ class TestCharacterMovement(unittest.TestCase):
     def tearDown(self):
         pass
 
-    # @patch('pygame.event.get')
-    # def test_movement_up(self, mock_get_event):
-    #
-    #     mock_get_event.return_value = [self.simulate_key_press(pygame.K_w)]
-    #     self.game.run(True)
-    #     self.assertLess(self.img_pos[1],self.initial_pos[1])
+    @patch('pygame.event.get')
+    def test_movement_jump(self, mock_get_event):
+        mock_get_event.return_value = [self.simulate_key_press(pygame.K_SPACE)]
+        self.game.run(True)
+        self.assertGreater(self.img_pos[1],self.initial_pos[1])
 
 
     @patch('pygame.event.get')
@@ -82,11 +82,6 @@ class TestCharacterMovement(unittest.TestCase):
         self.game.run(True)
         self.assertLess(self.img_pos[0], self.initial_pos[0])
 
-    # @patch('pygame.event.get')
-    # def test_movement_down(self, mock_get_event):
-    #     mock_get_event.return_value = [self.simulate_key_press(pygame.K_s)]
-    #     self.game.run(True)
-    #     self.assertGreater(self.img_pos[1], self.initial_pos[1])
 
     @patch('pygame.event.get')
     def test_movement_right(self, mock_get_event):
@@ -101,3 +96,18 @@ class TestCharacterMovement(unittest.TestCase):
         mock_event_key.key = key
         return mock_event_key
 
+class TestAnimationLists(unittest.TestCase):
+    def setUp(self):
+        self.actions_list = ['Idle','Running','Jump']
+
+    """Test that 'animate_character' infact returns a list and that nested lists are being populated with images"""
+    def test_animate_character(self):
+        for action in self.actions_list:
+            result = animate_character(action)
+            self.assertIsInstance(result,list)
+            self.assertTrue(len(result) > 6)
+
+            """Verify that objects in image lists are pygame.Surface"""
+            for image_lists in result:
+                for image in image_lists:
+                    self.assertIsInstance(image, pygame.Surface)
