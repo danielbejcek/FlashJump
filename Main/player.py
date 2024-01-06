@@ -1,7 +1,7 @@
 import pygame
 import os
 import sys
-from Images.images import img_paths
+from Images import images
 from Main.player_animation import animate_character
 from Main.Collisions import draw_floor
 
@@ -13,7 +13,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Character is starting in an 'Idle' animation"""
         self.action = 'Idle'
 
-        """Serves as a divider between actions. 0 is for idle, 1 is for running"""
+        """Serves as a divider between actions. 0 is for idle, 1 is for running etc..."""
         self.action_divider = 0
 
         """'self.frame_index' serves to access the specific image as an index in a 'animation_list' received from 'animate_character' function."""
@@ -34,7 +34,10 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Bow animation variables"""
         self.bow = False
         self.bow_start_time = None
-        self.bow_duration = 900
+        self.bow_duration = 800
+
+        """Arrow object variables"""
+        self.arrow = False
 
         """Collision floor temp var"""
         self.floor_test = 770
@@ -100,6 +103,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     """Bow animation"""
                     if event.key == pygame.K_e:
                         self.bow = True
+                        self.frame_index = 0
                         self.bow_start_time = pygame.time.get_ticks()
 
 
@@ -183,6 +187,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         """Bow animation"""
         if self.bow == True:
+            """X axis set to False to prevent the character from moving when performing the bow animation"""
             self.movement_x = [False,False]
             self.action, self.action_divider = 'Bow', 3
 
@@ -197,6 +202,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
                 if pygame.key.get_pressed()[pygame.K_d]:
                     self.movement_x[1] = True
                     self.flip = False
+
+
 
 
 

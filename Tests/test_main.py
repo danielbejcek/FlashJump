@@ -6,22 +6,17 @@ import pygame
 import sys
 from Main import main
 from Images.images import img_paths
+from Images import images
 from Main.player import PlayerCharacter
 from Main.player_animation import animate_character
 
-# """In order for the CI process of GitHub actions to work as intended, we need to import 'os' and adjust the paths"""
-# original_directory = os.getcwd()
-# core_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Main')
-# os.chdir(core_path)
+
 current_dir = os.path.dirname(__file__)
 
 class TestGameWindow(unittest.TestCase):
 
     def setUp(self):
         self.game = main.Game()
-        self.test_bg_img = img_paths["BG_image"]
-        self.test_char_img = img_paths["character_img"]
-
 
     def tearDown(self):
         pass

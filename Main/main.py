@@ -1,19 +1,18 @@
 import sys
 import pygame
 import os
-from Images.images import img_paths
+from Images import images
 from Main.player import PlayerCharacter
 from Main.Collisions import draw_floor
 
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((1792, 1024))
+        screen = pygame.display.set_mode((1792, 1024))
         pygame.display.set_caption("FlashJump")
-        self.clock = pygame.time.Clock()
-        self.bg_img = pygame.image.load(img_paths["BG_image"]).convert()
-        self.player = PlayerCharacter(600,770)
 
+        self.clock = pygame.time.Clock()
+        self.player = PlayerCharacter(600,770)
 
     def run(self,test_case = False):
         """Setting up a test case scenario to a limited number of loop iterations."""
@@ -23,9 +22,15 @@ class Game:
         while True and iteration < max_iterations:
 
             """Main background image"""
-            self.screen.blit(self.bg_img, (0,0))
+            images.screen.blit(images.bg_img, (0,0))
+
+
+            images.screen.blit(images.arrow_default,(600,700))
+
 
             draw_floor()
+
+            """Main method for updating the character's animation (Idle, running, jumping, shooting from a bow)"""
             self.player.update_animation()
 
             """Player character image"""
