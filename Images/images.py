@@ -20,5 +20,3 @@ img_paths = {
 
 bg_img = pygame.image.load(img_paths['BG_image']).convert()
 
-arrow_default = pygame.image.load(img_paths['arrow_default'])
-arrow_default = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))

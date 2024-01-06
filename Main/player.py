@@ -1,9 +1,7 @@
 import pygame
-import os
 import sys
 from Images import images
-from Main.player_animation import animate_character
-from Main.Collisions import draw_floor
+from Main.player_animation import animate_character, animate_arrow
 
 
 class PlayerCharacter(pygame.sprite.Sprite):
@@ -38,8 +36,11 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         """Arrow object variables"""
         self.arrow = False
+        self.arrow_y = self.img_pos[1] + 53
+        self.arrow_x = None
 
-        """Collision floor temp var"""
+
+        """Collision floor temporary var"""
         self.floor_test = 770
 
         """
@@ -103,8 +104,14 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     """Bow animation"""
                     if event.key == pygame.K_e:
                         self.bow = True
+                        self.arrow = True
                         self.frame_index = 0
                         self.bow_start_time = pygame.time.get_ticks()
+                        if self.flip:
+                            self.arrow_x = self.img_pos[0] - 10
+                        if not self.flip:
+                            self.arrow_x = self.img_pos[0] + 80
+
 
 
 
@@ -187,14 +194,19 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         """Bow animation"""
         if self.bow == True:
+
+            # animate_arrow(self.flip, self.img_pos[0], self.img_pos[1])
+            animate_arrow(self.flip, self.arrow_x, self.arrow_y)
             """X axis set to False to prevent the character from moving when performing the bow animation"""
             self.movement_x = [False,False]
             self.action, self.action_divider = 'Bow', 3
-
             self.image = animate_character(self.action)[self.action_divider][self.frame_index]
+
             if pygame.time.get_ticks() - self.bow_start_time > self.bow_duration:
                 self.bow = False
+                self.arrow = False
                 self.bow_start_time = None
+
                 if pygame.key.get_pressed()[pygame.K_a]:
                     self.movement_x[0] = True
                     self.flip = True
