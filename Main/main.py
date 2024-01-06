@@ -24,7 +24,6 @@ class Game:
             """Main background image"""
             images.screen.blit(images.bg_img, (0,0))
 
-
             draw_floor()
 
             """Main method for updating the character's animation (Idle, running, jumping, shooting from a bow)"""
