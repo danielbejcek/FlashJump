@@ -24,6 +24,10 @@ def animate_character(action):
             temp_list.append(img)
             animation_list.append(temp_list)
 
+        if action == 'Bow':
+            temp_list.append(img)
+            animation_list.append(temp_list)
+
     return animation_list
 
 

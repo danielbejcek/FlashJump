@@ -20,14 +20,23 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.frame_index = 0
         self.update_time = pygame.time.get_ticks()
 
-        self.jump = False
-        self.jump_start_time = None
-        self.jump_duration = 800
+        """Main movement variables"""
         self.movement_y = [False, True]
         self.movement_x = [False, False]
         self.img_pos = [x, y]
         self.flip = False
 
+        """Jump animation variables"""
+        self.jump = False
+        self.jump_start_time = None
+        self.jump_duration = 800
+
+        """Bow animation variables"""
+        self.bow = False
+        self.bow_start_time = None
+        self.bow_duration = 900
+
+        """Collision floor temp var"""
         self.floor_test = 770
 
         """
@@ -53,16 +62,13 @@ class PlayerCharacter(pygame.sprite.Sprite):
             self.img_pos[1] = self.floor_test
 
             if not any(pygame.key.get_pressed()):
-                self.action = 'Idle'
-                self.action_divider = 0
+                self.action, self.action_divider = 'Idle', 0
 
             if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
-                self.action = 'Running'
-                self.action_divider = 1
+                self.action, self.action_divider = 'Running', 1
 
             if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
-                self.action = 'Idle'
-                self.action_divider = 0
+                self.action, self.action_divider = 'Idle', 0
 
         """Main player movement loop"""
         for event in pygame.event.get():
@@ -71,10 +77,9 @@ class PlayerCharacter(pygame.sprite.Sprite):
                 sys.exit()
 
 
-            if self.jump == False:
+            if self.jump == False and self.bow == False:
                 if event.type == pygame.KEYDOWN:
-                    self.action = 'Running'
-                    self.action_divider = 1
+                    self.action, self.action_divider = 'Running', 1
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -92,9 +97,15 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         self.jump = True
                         self.jump_start_time = pygame.time.get_ticks()
 
+                    """Bow animation"""
+                    if event.key == pygame.K_e:
+                        self.bow = True
+                        self.bow_start_time = pygame.time.get_ticks()
+
+
+
                 if event.type == pygame.KEYUP:
-                    self.action = 'Idle'
-                    self.action_divider = 0
+                    self.action, self.action_divider = 'Idle', 0
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -109,10 +120,10 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         if self.motion_left:
                             self.flip = True
 
-            if self.jump == True:
+
+            if self.jump == True and self.bow == False:
                 if event.type == pygame.KEYDOWN:
-                    self.action = 'Jump'
-                    self.action_divider = 2
+                    self.action, self.action_divider = 'Jump', 2
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -140,13 +151,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
                             self.flip = True
 
 
-
     def update_animation(self):
         ANIMATION_COOLDOWN = 80
 
         """
         self.image controls the image generator. We are accessing the list which is returned from animate_character function.
-        We pass 'self.action_divider' that controls the nature of the action (either idle or running) 
+        We pass 'self.action_divider' that controls the nature of the action (idle, running etc...) 
         and 'self.frame_index' which allows the animation to always start from index 0 whenever a new action is introduced.
         """
         self.image = animate_character(self.action)[self.action_divider][self.frame_index]
@@ -160,16 +170,36 @@ class PlayerCharacter(pygame.sprite.Sprite):
             self.frame_index = 0
 
         if self.jump_start_time is not None:
-            current_time = pygame.time.get_ticks()
+            current_jump_time = pygame.time.get_ticks()
             """Increase Y axis while jump is active"""
             self.movement_y[1] = False
             self.movement_y[0] = True
 
-            if current_time - self.jump_start_time > self.jump_duration:
+            if current_jump_time - self.jump_start_time > self.jump_duration:
                 """Once jump animation is finished, apply gravity with 'self.movement[1] = True' again"""
                 self.movement_y[0] = False
                 self.movement_y[1] = True
                 self.jump_start_time = None
+
+        """Bow animation"""
+        if self.bow == True:
+            self.movement_x = [False,False]
+            self.action, self.action_divider = 'Bow', 3
+
+            self.image = animate_character(self.action)[self.action_divider][self.frame_index]
+            if pygame.time.get_ticks() - self.bow_start_time > self.bow_duration:
+                self.bow = False
+                self.bow_start_time = None
+                if pygame.key.get_pressed()[pygame.K_a]:
+                    self.movement_x[0] = True
+                    self.flip = True
+
+                if pygame.key.get_pressed()[pygame.K_d]:
+                    self.movement_x[1] = True
+                    self.flip = False
+
+
+
 
 
 

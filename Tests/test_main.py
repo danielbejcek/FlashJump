@@ -98,7 +98,7 @@ class TestCharacterMovement(unittest.TestCase):
 
 class TestAnimationLists(unittest.TestCase):
     def setUp(self):
-        self.actions_list = ['Idle','Running','Jump']
+        self.actions_list = ['Idle','Running','Jump','Bow']
 
     """Test that 'animate_character' infact returns a list and that nested lists are being populated with images"""
     def test_animate_character(self):
