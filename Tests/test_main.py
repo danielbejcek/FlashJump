@@ -8,7 +8,7 @@ from Main import main
 from Images.images import img_paths
 from Images import images
 from Main.player import PlayerCharacter
-from Main.player_animation import animate_character
+from Main.player_animation import animate_character, animate_arrow
 
 
 current_dir = os.path.dirname(__file__)
@@ -54,13 +54,17 @@ class TestGameWindow(unittest.TestCase):
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
-        self.player = PlayerCharacter(600,500)
+        """Instance of player from PlayerCharacter class"""
+        self.player = PlayerCharacter(600,770)
+        """Instance from main game loop"""
+        self.game.player = PlayerCharacter(600,770)
 
-        # Setting up x, y position from the player instance in the main.Game()
+        """Setting up x, y position from the player instance in the main.Game() which is being updated"""
         self.img_pos = self.game.player.img_pos
 
-        # Setting up x, y position from PlayerCharacter class
+        """Setting up x, y position from static PlayerCharacter class"""
         self.initial_pos = self.player.img_pos
+
     def tearDown(self):
         pass
 
@@ -68,22 +72,32 @@ class TestCharacterMovement(unittest.TestCase):
     def test_movement_jump(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_SPACE)]
         self.game.run(True)
-        self.assertGreater(self.img_pos[1],self.initial_pos[1])
-
+        self.assertLess(self.img_pos[1],self.initial_pos[1])
+        self.assertFalse(self.game.player.movement_y[1])
+        self.assertTrue(self.game.player.movement_y[0])
 
     @patch('pygame.event.get')
     def test_movement_left(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_a)]
         self.game.run(True)
         self.assertLess(self.img_pos[0], self.initial_pos[0])
-
+        self.assertTrue(self.game.player.movement_x[0])
+        self.assertFalse(self.game.player.movement_x[1])
 
     @patch('pygame.event.get')
     def test_movement_right(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_d)]
         self.game.run(True)
         self.assertGreater(self.img_pos[0], self.initial_pos[0])
+        self.assertTrue(self.game.player.movement_x[1])
+        self.assertFalse(self.game.player.movement_x[0])
 
+    @patch('pygame.event.get')
+    def test_bow_animation(self, mock_get_event):
+        mock_get_event.return_value = [self.simulate_key_press(pygame.K_e)]
+        self.game.run(True)
+        self.assertFalse(self.player.movement_x[0])
+        self.assertFalse(self.player.movement_x[1])
 
     def simulate_key_press(self, key):
         mock_event_key = MagicMock()
@@ -93,7 +107,44 @@ class TestCharacterMovement(unittest.TestCase):
 
 class TestAnimationLists(unittest.TestCase):
     def setUp(self):
+        self.game = main.Game()
+        """Instance of player from PlayerCharacter class"""
+        self.player = PlayerCharacter(600, 770)
+        """Instance from main game loop"""
+        self.game.player = PlayerCharacter(600, 770)
+
+        """Setting up x, y position from the player instance in the main.Game() which is being updated"""
+        self.img_pos = self.game.player.img_pos
+
+        """Setting up x, y position from static PlayerCharacter class"""
+        self.initial_pos = self.player.img_pos
+
         self.actions_list = ['Idle','Running','Jump','Bow']
+
+        self.direction = self.game.player.flip
+        self.arrow_x = self.game.player.arrow_x
+        self.arrow_y = self.game.player.arrow_y
+        self.image = animate_character('Bow')[3][0]
+
+
+
+
+    def tearDown(self):
+        pass
+
+    """Test that 'draw_character' is called with proper arguments"""
+    @patch('pygame.transform.flip')
+    def test_draw_character(self,mock_flip):
+        pygame.init()
+        self.player.screen = MagicMock()
+
+        self.player.image = pygame.Surface((1,1))
+        mock_surface = pygame.Surface((1,1))
+        mock_flip.return_value = mock_surface
+
+        self.player.draw_character()
+        mock_flip.assert_called_with(self.player.image, self.player.flip, False)
+        self.player.screen.blit.assert_called_with(mock_surface, self.player.img_pos)
 
     """Test that 'animate_character' infact returns a list and that nested lists are being populated with images"""
     def test_animate_character(self):
@@ -106,3 +157,24 @@ class TestAnimationLists(unittest.TestCase):
             for image_lists in result:
                 for image in image_lists:
                     self.assertIsInstance(image, pygame.Surface)
+
+    # @patch('Main.player.PlayerCharacter.update_animation')
+    # # # @patch('Main.player_animation.animate_arrow')
+    # def test_animate_arrow(self, mock_update_animation):
+    #     self.image = Mock()
+    #     pygame.init()
+    #     self.game.run(True)
+    #
+    # #
+    # #
+    #     mock_update_animation.assert_called()
+    # #     # mock_animate_arrow.assert_called_once_with(self.direction, self.arrow_x, self.arrow_y)
+    #     result = animate_arrow(direction=True,x_pos=600,y_pos=770)
+    #     self.assertIsInstance(result,pygame.Surface)
+    # #
+    # #     # with patch('Main.player.PlayerCharacter.update_animation'):
+    # #     #     try:
+    # #     #         # mock_animate_arrow.assert_called_once_with(self.direction, self.arrow_x, self.arrow_y)
+    # #     #         mock_animate_arrow.assert_called()
+    # #     #     except SystemExit:
+    # #     #         pass

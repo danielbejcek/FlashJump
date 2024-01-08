@@ -218,6 +218,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         """Arrow animation"""
         if self.bow == False and self.arrow == True:
+            """self.arrow_direction corresponds to the current self.flip state"""
             if not self.arrow_direction:
                 self.arrow_x += 30
             else:

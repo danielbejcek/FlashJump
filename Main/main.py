@@ -15,7 +15,7 @@ class Game:
         self.player = PlayerCharacter(600,770)
 
     def run(self,test_case = False):
-        """Setting up a test case scenario to a limited number of loop iterations."""
+        """Setting up a test case scenario to a limited number of iterations."""
         max_iterations = 20
         iteration = 0
 
