@@ -43,6 +43,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Collision floor temporary var"""
         self.floor_test = 770
 
+        self.image = pygame.Surface((1,1))
+
         """
         Variables that help control the movement of the character. When user presses 'Key_A' to run left and right after 'Key_D' to run right,
         character will stop and enter 'Idle' animation, until one of the keys is released.
@@ -71,10 +73,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
             if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
                 self.action, self.action_divider = 'Running', 1
 
-
             if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
                 self.action, self.action_divider = 'Idle', 0
-
 
 
         """Main player movement loop"""
@@ -82,7 +82,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
 
             if self.jump == False:
                 if event.type == pygame.KEYDOWN and self.bow == False:
@@ -106,10 +105,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
                     """Bow animation"""
                     if event.key == pygame.K_e:
+
                         self.bow = True
                         self.arrow = True
                         self.frame_index = 0
                         self.bow_start_time = pygame.time.get_ticks()
+
 
                         """Arrow object orientation"""
                         self.arrow_direction = self.flip
@@ -117,8 +118,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
                             self.arrow_x = self.img_pos[0]
                         if not self.flip:
                             self.arrow_x = self.img_pos[0]
-
-
 
                 if event.type == pygame.KEYUP:
                     self.action, self.action_divider = 'Idle', 0
@@ -166,8 +165,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         if self.motion_left:
                             self.flip = True
 
-
     def update_animation(self):
+
         """
         self.image controls the image generator. We are accessing the list which is returned from animate_character function.
         We pass 'self.action_divider' that controls the nature of the action (idle, running etc...) 

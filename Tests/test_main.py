@@ -53,7 +53,10 @@ class TestGameWindow(unittest.TestCase):
 
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
+
+
         self.game = main.Game()
+
         """Instance of player from PlayerCharacter class"""
         self.player = PlayerCharacter(600,770)
         """Instance from main game loop"""
@@ -65,9 +68,11 @@ class TestCharacterMovement(unittest.TestCase):
         """Setting up x, y position from static PlayerCharacter class"""
         self.initial_pos = self.player.img_pos
 
-    def tearDown(self):
-        pass
 
+
+    def tearDown(self):
+
+        pass
     @patch('pygame.event.get')
     def test_movement_jump(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_SPACE)]
@@ -92,12 +97,15 @@ class TestCharacterMovement(unittest.TestCase):
         self.assertTrue(self.game.player.movement_x[1])
         self.assertFalse(self.game.player.movement_x[0])
 
+
     @patch('pygame.event.get')
     def test_bow_animation(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_e)]
         self.game.run(True)
         self.assertFalse(self.player.movement_x[0])
         self.assertFalse(self.player.movement_x[1])
+
+
 
     def simulate_key_press(self, key):
         mock_event_key = MagicMock()
@@ -119,14 +127,8 @@ class TestAnimationLists(unittest.TestCase):
         """Setting up x, y position from static PlayerCharacter class"""
         self.initial_pos = self.player.img_pos
 
+        """Action list to simulate animations"""
         self.actions_list = ['Idle','Running','Jump','Bow']
-
-        self.direction = self.game.player.flip
-        self.arrow_x = self.game.player.arrow_x
-        self.arrow_y = self.game.player.arrow_y
-        self.image = animate_character('Bow')[3][0]
-
-
 
 
     def tearDown(self):
@@ -158,23 +160,9 @@ class TestAnimationLists(unittest.TestCase):
                 for image in image_lists:
                     self.assertIsInstance(image, pygame.Surface)
 
-    # @patch('Main.player.PlayerCharacter.update_animation')
-    # # # @patch('Main.player_animation.animate_arrow')
-    # def test_animate_arrow(self, mock_update_animation):
-    #     self.image = Mock()
-    #     pygame.init()
-    #     self.game.run(True)
-    #
-    # #
-    # #
-    #     mock_update_animation.assert_called()
-    # #     # mock_animate_arrow.assert_called_once_with(self.direction, self.arrow_x, self.arrow_y)
-    #     result = animate_arrow(direction=True,x_pos=600,y_pos=770)
-    #     self.assertIsInstance(result,pygame.Surface)
-    # #
-    # #     # with patch('Main.player.PlayerCharacter.update_animation'):
-    # #     #     try:
-    # #     #         # mock_animate_arrow.assert_called_once_with(self.direction, self.arrow_x, self.arrow_y)
-    # #     #         mock_animate_arrow.assert_called()
-    # #     #     except SystemExit:
-    # #     #         pass
+    @patch('Main.player_animation.animate_arrow')
+    def test_animate_arrow(self, mock_animate_arrow):
+        mock_animate_arrow.asser_called_with(self.player.flip,500,500)
+        self.assertIsInstance(animate_arrow(True,500,500), pygame.Surface)
+
+
