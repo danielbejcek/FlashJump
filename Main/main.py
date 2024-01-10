@@ -6,19 +6,23 @@ from Main.player import PlayerCharacter
 from Main.Collisions import draw_floor
 
 
+
 class Game:
     def __init__(self):
         pygame.init()
-        screen = pygame.display.set_mode((1792, 1024))
+        self.screen = pygame.display.set_mode((1792, 1024))
         pygame.display.set_caption("FlashJump")
 
         self.clock = pygame.time.Clock()
         self.player = PlayerCharacter(600,770)
 
+
     def run(self,test_case = False):
         """Setting up a test case scenario to a limited number of iterations."""
         max_iterations = 20
         iteration = 0
+
+
 
         while True and iteration < max_iterations:
 
@@ -29,6 +33,9 @@ class Game:
 
             """Main method for updating the character's animation (Idle, running, jumping, shooting from a bow)"""
             self.player.update_animation()
+
+            """Arrow object animation"""
+            self.player.draw_arrow()
 
             """Player character image"""
             self.player.draw_character()

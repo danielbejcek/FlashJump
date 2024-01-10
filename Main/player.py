@@ -1,7 +1,8 @@
 import pygame
 import sys
-from Images import images
-from Main.player_animation import animate_character, animate_arrow
+from Images.images import img_paths
+
+from Main.player_animation import animate_character
 
 
 class PlayerCharacter(pygame.sprite.Sprite):
@@ -39,6 +40,9 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.arrow_y = self.img_pos[1] + 53
         self.arrow_x = None
         self.arrow_direction = None
+        self.arrow_quiver = []
+        self.arrow_duration = 500
+        self.arrow_counter = 0
 
         """Collision floor temporary var"""
         self.floor_test = 770
@@ -105,11 +109,11 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
                     """Bow animation"""
                     if event.key == pygame.K_e:
-
                         self.bow = True
                         self.arrow = True
                         self.frame_index = 0
                         self.bow_start_time = pygame.time.get_ticks()
+
 
 
                         """Arrow object orientation"""
@@ -218,17 +222,28 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Arrow animation"""
         if self.bow == False and self.arrow == True:
             """self.arrow_direction corresponds to the current self.flip state"""
-            if not self.arrow_direction:
-                self.arrow_x += 30
-            else:
-                self.arrow_x -= 30
-            animate_arrow(self.arrow_direction, self.arrow_x, self.arrow_y)
+            self.create_arrow()
+            self.arrow = False
 
+        # current_arrow_time = pygame.time.get_ticks()
+        # self.arrow_quiver = [arrow for arrow in self.arrow_quiver if current_arrow_time - self.arrow_quiver[4] < self.arrow_duration]
 
+    def create_arrow(self):
 
+        arrow_default = pygame.image.load(img_paths['arrow_default'])
+        arrow_scaled = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))
+        arrow_image = pygame.transform.flip(arrow_scaled, self.arrow_direction, False)
+        self.arrow_quiver.append([arrow_image,self.arrow_direction,self.arrow_x,self.arrow_y])
+        print(self.arrow_quiver)
 
-
-
+    def draw_arrow(self):
+        for arrow in self.arrow_quiver:
+            if arrow[1] == True:
+                arrow[2] -= 20
+                self.screen.blit((arrow[0]), (arrow[2], arrow[3]))
+            if arrow[1] == False:
+                arrow[2] += 20
+                self.screen.blit((arrow[0]), (arrow[2]+ 100, arrow[3]))
 
 
 

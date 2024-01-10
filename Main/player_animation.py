@@ -1,9 +1,11 @@
 import pygame
 import os
 from Images.images import img_paths
+# from Main.player import PlayerCharacter
 
 current_dir = os.path.dirname(__file__)
 screen = pygame.display.set_mode((1792, 1024))
+# player = PlayerCharacter(50,50)
 def animate_character(action):
     animation_list = []
     temp_list = []
@@ -33,12 +35,16 @@ def animate_character(action):
 
 
 
-def animate_arrow(direction,x_pos,y_pos):
-    arrow_default = pygame.image.load(img_paths['arrow_default'])
-    arrow_default = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))
-    screen.blit(pygame.transform.flip(arrow_default, direction, False), (x_pos, y_pos))
-    return arrow_default
-
+def animate_arrow():
+    pass
+    # player.arrow_quiver
+    # arrow_timestamp = pygame.time.get_ticks()
+    # arrow_default = pygame.image.load(img_paths['arrow_default'])
+    # arrow_scaled = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))
+    # arrow_image = pygame.transform.flip(arrow_scaled, direction, False)
+    # # arrow_object = screen.blit(pygame.transform.flip(arrow_default, direction, False), (x_pos, y_pos))
+    #
+    # return [arrow_image, x_pos, y_pos,direction]
 
 
 
