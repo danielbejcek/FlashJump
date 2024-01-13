@@ -35,16 +35,5 @@ def animate_character(action):
 
 
 
-def animate_arrow():
-    pass
-    # player.arrow_quiver
-    # arrow_timestamp = pygame.time.get_ticks()
-    # arrow_default = pygame.image.load(img_paths['arrow_default'])
-    # arrow_scaled = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))
-    # arrow_image = pygame.transform.flip(arrow_scaled, direction, False)
-    # # arrow_object = screen.blit(pygame.transform.flip(arrow_default, direction, False), (x_pos, y_pos))
-    #
-    # return [arrow_image, x_pos, y_pos,direction]
-
 
 

@@ -17,12 +17,10 @@ class Game:
         self.player = PlayerCharacter(600,770)
 
 
-    def run(self,test_case = False):
+    def run(self,test_case=False):
         """Setting up a test case scenario to a limited number of iterations."""
         max_iterations = 20
         iteration = 0
-
-
 
         while True and iteration < max_iterations:
 
@@ -34,8 +32,9 @@ class Game:
             """Main method for updating the character's animation (Idle, running, jumping, shooting from a bow)"""
             self.player.update_animation()
 
-            """Arrow object animation"""
-            self.player.draw_arrow()
+            """Arrow object animation, method is called only when 'arrow_quiver' list is not empty"""
+            if self.player.arrow_quiver != []:
+                self.player.draw_arrow()
 
             """Player character image"""
             self.player.draw_character()

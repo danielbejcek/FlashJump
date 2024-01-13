@@ -8,7 +8,7 @@ from Main import main
 from Images.images import img_paths
 from Images import images
 from Main.player import PlayerCharacter
-from Main.player_animation import animate_character, animate_arrow
+from Main.player_animation import animate_character
 
 
 current_dir = os.path.dirname(__file__)
@@ -118,9 +118,6 @@ class TestAnimationLists(unittest.TestCase):
         """Instance of player from PlayerCharacter class"""
         self.player = PlayerCharacter(600, 770)
 
-        """Instance from main game loop"""
-        self.game.player = PlayerCharacter(600, 770)
-
         """Setting up x, y position from the player instance in the main.Game() which is being updated"""
         self.img_pos = self.game.player.img_pos
 
@@ -162,19 +159,30 @@ class TestAnimationLists(unittest.TestCase):
                 for image in image_lists:
                     self.assertIsInstance(image, pygame.Surface)
     def test_create_arrow(self):
-
         """Starting with an empty list"""
         self.assertListEqual([],self.player.arrow_quiver)
 
+        """Method call"""
         self.player.create_arrow()
 
-        """Length of nested list in first instance"""
+        """Length of nested list after first method call"""
         self.assertEqual(len(self.player.arrow_quiver[0]),4)
 
-        """Length of parent list is 2 after we call 'create_arrow' twice"""
+        """Length of parent list should be 2 after we call 'create_arrow' twice"""
         self.player.create_arrow()
         self.assertGreater(len(self.player.arrow_quiver),1)
 
+
+    def test_draw_arrow_called(self):
+        """
+        Calling the 'create_arrow' method in the main loop to populate list with arrow objects and verify,
+        that 'draw_arrow' method is being accurately called only if the 'arrow_quiver' is not empty.
+        """
+        self.game.player.create_arrow()
+        with patch.object(PlayerCharacter,'draw_arrow') as mock_draw_arrow:
+            self.game.run(True)
+
+        mock_draw_arrow.assert_called()
 
 
 

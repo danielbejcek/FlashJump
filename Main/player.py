@@ -229,7 +229,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
         # self.arrow_quiver = [arrow for arrow in self.arrow_quiver if current_arrow_time - self.arrow_quiver[4] < self.arrow_duration]
 
     def create_arrow(self):
-
         arrow_default = pygame.image.load(img_paths['arrow_default'])
         arrow_scaled = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))
         arrow_image = pygame.transform.flip(arrow_scaled, self.arrow_direction, False)
@@ -238,9 +237,11 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
     def draw_arrow(self):
         for arrow in self.arrow_quiver:
+            """Direction is left"""
             if arrow[1] == True:
                 arrow[2] -= 20
                 self.screen.blit((arrow[0]), (arrow[2], arrow[3]))
+            """Direction is right"""
             if arrow[1] == False:
                 arrow[2] += 20
                 self.screen.blit((arrow[0]), (arrow[2] + 100, arrow[3]))
