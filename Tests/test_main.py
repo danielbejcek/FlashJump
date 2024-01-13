@@ -97,7 +97,6 @@ class TestCharacterMovement(unittest.TestCase):
         self.assertTrue(self.game.player.movement_x[1])
         self.assertFalse(self.game.player.movement_x[0])
 
-
     @patch('pygame.event.get')
     def test_bow_animation(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_e)]
@@ -118,6 +117,7 @@ class TestAnimationLists(unittest.TestCase):
         self.game = main.Game()
         """Instance of player from PlayerCharacter class"""
         self.player = PlayerCharacter(600, 770)
+
         """Instance from main game loop"""
         self.game.player = PlayerCharacter(600, 770)
 
@@ -130,6 +130,8 @@ class TestAnimationLists(unittest.TestCase):
         """Action list to simulate animations"""
         self.actions_list = ['Idle','Running','Jump','Bow']
 
+        self.mock_surface = pygame.Surface((1,1))
+
 
     def tearDown(self):
         pass
@@ -141,14 +143,14 @@ class TestAnimationLists(unittest.TestCase):
         self.player.screen = MagicMock()
 
         self.player.image = pygame.Surface((1,1))
-        mock_surface = pygame.Surface((1,1))
-        mock_flip.return_value = mock_surface
+
+        mock_flip.return_value = self.mock_surface
 
         self.player.draw_character()
         mock_flip.assert_called_with(self.player.image, self.player.flip, False)
-        self.player.screen.blit.assert_called_with(mock_surface, self.player.img_pos)
+        self.player.screen.blit.assert_called_with(self.mock_surface, self.player.img_pos)
 
-    """Test that 'animate_character' infact returns a list and that nested lists are being populated with images"""
+    """Test that 'animate_character' in fact returns a list and that nested lists are being populated with images"""
     def test_animate_character(self):
         for action in self.actions_list:
             result = animate_character(action)
@@ -159,10 +161,26 @@ class TestAnimationLists(unittest.TestCase):
             for image_lists in result:
                 for image in image_lists:
                     self.assertIsInstance(image, pygame.Surface)
+    def test_create_arrow(self):
 
-    @patch('Main.player_animation.animate_arrow')
-    def test_animate_arrow(self, mock_animate_arrow):
-        mock_animate_arrow.asser_called_with(self.player.flip,500,500)
-        self.assertIsInstance(animate_arrow(True,500,500), pygame.Surface)
+        """Starting with an empty list"""
+        self.assertListEqual([],self.player.arrow_quiver)
+
+        self.player.create_arrow()
+
+        """Length of nested list in first instance"""
+        self.assertEqual(len(self.player.arrow_quiver[0]),4)
+
+        """Length of parent list is 2 after we call 'create_arrow' twice"""
+        self.player.create_arrow()
+        self.assertGreater(len(self.player.arrow_quiver),1)
+
+
+
+
+
+
+
+
 
 

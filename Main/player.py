@@ -39,7 +39,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.arrow = False
         self.arrow_y = self.img_pos[1] + 53
         self.arrow_x = None
-        self.arrow_direction = None
+        self.arrow_direction = True
         self.arrow_quiver = []
         self.arrow_duration = 500
         self.arrow_counter = 0
@@ -234,7 +234,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         arrow_scaled = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))
         arrow_image = pygame.transform.flip(arrow_scaled, self.arrow_direction, False)
         self.arrow_quiver.append([arrow_image,self.arrow_direction,self.arrow_x,self.arrow_y])
-        print(self.arrow_quiver)
+
 
     def draw_arrow(self):
         for arrow in self.arrow_quiver:
@@ -243,7 +243,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
                 self.screen.blit((arrow[0]), (arrow[2], arrow[3]))
             if arrow[1] == False:
                 arrow[2] += 20
-                self.screen.blit((arrow[0]), (arrow[2]+ 100, arrow[3]))
+                self.screen.blit((arrow[0]), (arrow[2] + 100, arrow[3]))
 
 
 
