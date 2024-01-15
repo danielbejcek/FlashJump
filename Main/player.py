@@ -38,11 +38,11 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Arrow object variables"""
         self.arrow = False
         self.arrow_y = self.img_pos[1] + 53
-        self.arrow_x = None
+        # self.arrow_x = None
+        self.arrow_x = self.img_pos[0]
         self.arrow_direction = True
         self.arrow_quiver = []
         self.arrow_duration = 3000
-        self.arrow_repeat_time = None
 
 
         """Collision floor temporary var"""
@@ -212,6 +212,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
                 self.arrow = True
                 self.bow_start_time = None
 
+                """If key 'E' is held down, the bow animation keeps going as well as the projectiles"""
                 if pygame.key.get_pressed()[pygame.K_e]:
                     self.motion_left = False
                     self.motion_right = False
@@ -254,22 +255,25 @@ class PlayerCharacter(pygame.sprite.Sprite):
         - arrow_quiver[3] - static integer Y axis position to vertically place the arrow where character currently is.
         - arrow_quiver[4] - pygame.time.get_ticks() method to help us track the time span of each individual arrow.
         """
-        for arrow in self.arrow_quiver:
+        for index, arrow in enumerate(self.arrow_quiver):
             """Direction is left"""
             if arrow[1] == True:
-                arrow[2] -= 20
+                arrow[2] -= 15
+                """After 'arrow_duration' has passed, arrow image will be not be active in the main loop anymore"""
                 if pygame.time.get_ticks() - arrow[4] < self.arrow_duration:
                     self.screen.blit((arrow[0]), (arrow[2], arrow[3]))
                 else:
-                    self.arrow_quiver.pop(0)
+                    self.arrow_quiver.pop(index)
 
             """Direction is right"""
             if arrow[1] == False:
-                arrow[2] += 20
+                arrow[2] += 15
                 if pygame.time.get_ticks() - arrow[4] < self.arrow_duration:
                     self.screen.blit((arrow[0]), (arrow[2] + 100, arrow[3]))
                 else:
-                    self.arrow_quiver.pop(0)
+                    self.arrow_quiver.pop(index)
+
+
 
 
 

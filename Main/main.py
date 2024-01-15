@@ -17,13 +17,11 @@ class Game:
         self.player = PlayerCharacter(600,770)
 
 
-    def run(self,test_case=False):
+    def run(self,test_case=False, max_iterations=20):
         """Setting up a test case scenario to a limited number of iterations."""
-        max_iterations = 20
         iteration = 0
 
         while True and iteration < max_iterations:
-
             """Main background image"""
             images.screen.blit(images.bg_img, (0,0))
 
@@ -35,7 +33,7 @@ class Game:
             """Arrow object animation, method is called only when 'arrow_quiver' list is not empty"""
             if self.player.arrow_quiver != []:
                 self.player.draw_arrow()
-            print(self.player.bow, self.player.arrow)
+
             """Player character image"""
             self.player.draw_character()
 

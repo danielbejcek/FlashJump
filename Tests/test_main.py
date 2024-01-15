@@ -4,7 +4,6 @@ from unittest.mock import Mock
 from unittest.mock import patch, MagicMock
 import pygame
 import sys
-
 import Main.player
 from Main import main
 from Images.images import img_paths
@@ -134,6 +133,7 @@ class TestAnimationLists(unittest.TestCase):
 
     def tearDown(self):
         pass
+        # self.game.player.arrow_quiver.clear()
 
     """Test that 'draw_character' is called with proper arguments"""
     @patch('pygame.transform.flip')
@@ -170,9 +170,13 @@ class TestAnimationLists(unittest.TestCase):
         """Length of nested list after first method call"""
         self.assertEqual(len(self.player.arrow_quiver[0]),5)
 
+        self.assertFalse(self.player.flip)
+
         """Length of parent list should be 2 after we call 'create_arrow' twice"""
-        self.player.create_arrow()
-        self.assertGreater(len(self.player.arrow_quiver),1)
+        for i in range(10):
+            self.player.create_arrow()
+        self.assertEqual(len(self.player.arrow_quiver),11)
+
 
 
     def test_draw_arrow_called(self):
@@ -180,10 +184,30 @@ class TestAnimationLists(unittest.TestCase):
         Calling the 'create_arrow' method in the main loop to populate list with arrow objects and verify,
         that 'draw_arrow' method is being accurately called only if the 'arrow_quiver' is not empty.
         """
-        self.game.player.create_arrow()
-        with patch.object(PlayerCharacter,'draw_arrow') as mock_draw_arrow:
-            self.game.run(True)
-        mock_draw_arrow.assert_called()
+
+        # self.game.player.create_arrow()
+        # with patch.object(PlayerCharacter,'draw_arrow') as mock_draw_arrow:
+        #     self.game.run(True)
+        # mock_draw_arrow.assert_called()
+
+        """Setting up a list with 20 arrows to be removed if 'player.draw_arrow' works as intended"""
+        for i in range(20):
+            self.game.player.create_arrow()
+
+        """
+        Integration test to simulate removal of the arrows from the 'arrow_quiver'. 
+        After we created 20 arrows, it takes 5 iterations to completely remove them from the list.
+        """
+        with patch('pygame.time.get_ticks') as mock_time:
+            """
+            With 'pygame.time.get_ticks' mock we allow the arrow fly animation to complete.
+            We are effectively setting the mocked time to 10 seconds, meaning 10 seconds have passed in the test scenario.
+            """
+            mock_time.return_value = 10000
+            self.game.run(True,5)
+            print(len(self.game.player.arrow_quiver),"Arrows left in quiver")
+            self.assertEqual(len(self.game.player.arrow_quiver),0)
+
 
 
 
