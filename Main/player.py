@@ -41,8 +41,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.arrow_x = None
         self.arrow_direction = True
         self.arrow_quiver = []
-        self.arrow_duration = 500
-        self.arrow_counter = 0
+        self.arrow_duration = 3000
+
 
         """Collision floor temporary var"""
         self.floor_test = 770
@@ -223,28 +223,43 @@ class PlayerCharacter(pygame.sprite.Sprite):
         if self.bow == False and self.arrow == True:
             """self.arrow_direction corresponds to the current self.flip state"""
             self.create_arrow()
+
             self.arrow = False
 
-        # current_arrow_time = pygame.time.get_ticks()
-        # self.arrow_quiver = [arrow for arrow in self.arrow_quiver if current_arrow_time - self.arrow_quiver[4] < self.arrow_duration]
-
     def create_arrow(self):
+        self.arrow_start_time = pygame.time.get_ticks()
         arrow_default = pygame.image.load(img_paths['arrow_default'])
         arrow_scaled = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))
         arrow_image = pygame.transform.flip(arrow_scaled, self.arrow_direction, False)
-        self.arrow_quiver.append([arrow_image,self.arrow_direction,self.arrow_x,self.arrow_y])
+        """Each arrow instance is stored in a 'arrow_quiver' list to enable firing multiple arrows without overlapping"""
+        self.arrow_quiver.append([arrow_image,self.arrow_direction,self.arrow_x,self.arrow_y, self.arrow_start_time])
 
 
     def draw_arrow(self):
+        """
+        'arrow_quiver' list contains multiple items to help us control the arrow object.
+        - arrow[0] - pygame.Surface image of an arrow.
+        - arrow[1] - Boolean that derives from 'self.flip', which gives us direction in which the arrow will fly.
+        - arrow[2] - integer X axis position which is being constantly updated while in the loop to simulate animation.
+        - arrow[3] - static integer Y axis position to verticaly place the arrow where character currently is.
+        - arrow[4] - pygame.time.get_ticks() method to help us track the time span of each individual arrow.
+        """
         for arrow in self.arrow_quiver:
             """Direction is left"""
             if arrow[1] == True:
                 arrow[2] -= 20
-                self.screen.blit((arrow[0]), (arrow[2], arrow[3]))
+                if pygame.time.get_ticks() - arrow[4] < self.arrow_duration:
+                    self.screen.blit((arrow[0]), (arrow[2], arrow[3]))
+                else:
+                    self.arrow_quiver.pop(0)
+
             """Direction is right"""
             if arrow[1] == False:
                 arrow[2] += 20
-                self.screen.blit((arrow[0]), (arrow[2] + 100, arrow[3]))
+                if pygame.time.get_ticks() - arrow[4] < self.arrow_duration:
+                    self.screen.blit((arrow[0]), (arrow[2] + 100, arrow[3]))
+                else:
+                    self.arrow_quiver.pop(0)
 
 
 

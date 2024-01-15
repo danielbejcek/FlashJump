@@ -4,6 +4,8 @@ from unittest.mock import Mock
 from unittest.mock import patch, MagicMock
 import pygame
 import sys
+
+import Main.player
 from Main import main
 from Images.images import img_paths
 from Images import images
@@ -166,7 +168,7 @@ class TestAnimationLists(unittest.TestCase):
         self.player.create_arrow()
 
         """Length of nested list after first method call"""
-        self.assertEqual(len(self.player.arrow_quiver[0]),4)
+        self.assertEqual(len(self.player.arrow_quiver[0]),5)
 
         """Length of parent list should be 2 after we call 'create_arrow' twice"""
         self.player.create_arrow()
@@ -181,10 +183,7 @@ class TestAnimationLists(unittest.TestCase):
         self.game.player.create_arrow()
         with patch.object(PlayerCharacter,'draw_arrow') as mock_draw_arrow:
             self.game.run(True)
-
         mock_draw_arrow.assert_called()
-
-
 
 
 
