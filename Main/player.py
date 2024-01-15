@@ -33,7 +33,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Bow animation variables"""
         self.bow = False
         self.bow_start_time = None
-        self.bow_duration = 600
+        self.bow_duration = 650
 
         """Arrow object variables"""
         self.arrow = False
@@ -42,6 +42,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.arrow_direction = True
         self.arrow_quiver = []
         self.arrow_duration = 3000
+        self.arrow_repeat_time = None
 
 
         """Collision floor temporary var"""
@@ -66,7 +67,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Y axis position"""
         self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * 4
 
-        """Help conditions to manipulate character more precisely after touching the ground"""
+        """Help conditions to manipulate character more precisely after touching the ground or transferring from a different animation"""
         if self.img_pos[1] >= self.floor_test:
             self.jump = False
             self.img_pos[1] = self.floor_test
@@ -110,11 +111,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     """Bow animation"""
                     if event.key == pygame.K_e:
                         self.bow = True
-                        self.arrow = True
                         self.frame_index = 0
                         self.bow_start_time = pygame.time.get_ticks()
-
-
 
                         """Arrow object orientation"""
                         self.arrow_direction = self.flip
@@ -125,6 +123,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
                 if event.type == pygame.KEYUP:
                     self.action, self.action_divider = 'Idle', 0
+
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -202,35 +201,46 @@ class PlayerCharacter(pygame.sprite.Sprite):
         if self.bow == True:
 
             """X axis set to False to prevent the character from moving when performing the bow animation"""
-            self.movement_x = [False,False]
-
+            self.movement_x = [False, False]
+            self.flip = self.flip
             self.action, self.action_divider = 'Bow', 3
             self.image = animate_character(self.action)[self.action_divider][self.frame_index]
 
+            """Condition is triggered after the bow animation is finished"""
             if pygame.time.get_ticks() - self.bow_start_time > self.bow_duration:
                 self.bow = False
+                self.arrow = True
                 self.bow_start_time = None
 
-                if pygame.key.get_pressed()[pygame.K_a]:
-                    self.movement_x[0] = True
-                    self.flip = True
+                if pygame.key.get_pressed()[pygame.K_e]:
+                    self.motion_left = False
+                    self.motion_right = False
+                    self.bow = True
+                    self.bow_start_time = pygame.time.get_ticks()
 
-                if pygame.key.get_pressed()[pygame.K_d]:
+                if pygame.key.get_pressed()[pygame.K_d] and not pygame.key.get_pressed()[pygame.K_e]:
                     self.movement_x[1] = True
+                    self.motion_right = True
                     self.flip = False
 
-        """Arrow animation"""
-        if self.bow == False and self.arrow == True:
-            """self.arrow_direction corresponds to the current self.flip state"""
-            self.create_arrow()
+                if pygame.key.get_pressed()[pygame.K_a] and not pygame.key.get_pressed()[pygame.K_e]:
+                    self.movement_x[0] = True
+                    self.motion_left = True
+                    self.flip = True
 
-            self.arrow = False
+
+                """Arrow animation"""
+                if self.arrow == True:
+                    self.create_arrow()
+                    self.arrow = False
+
 
     def create_arrow(self):
         self.arrow_start_time = pygame.time.get_ticks()
         arrow_default = pygame.image.load(img_paths['arrow_default'])
         arrow_scaled = pygame.transform.scale(arrow_default, (int(arrow_default.get_width() * 1.3), (int(arrow_default.get_height() * 1.3))))
         arrow_image = pygame.transform.flip(arrow_scaled, self.arrow_direction, False)
+
         """Each arrow instance is stored in a 'arrow_quiver' list to enable firing multiple arrows without overlapping"""
         self.arrow_quiver.append([arrow_image,self.arrow_direction,self.arrow_x,self.arrow_y, self.arrow_start_time])
 
@@ -238,11 +248,11 @@ class PlayerCharacter(pygame.sprite.Sprite):
     def draw_arrow(self):
         """
         'arrow_quiver' list contains multiple items to help us control the arrow object.
-        - arrow[0] - pygame.Surface image of an arrow.
-        - arrow[1] - Boolean that derives from 'self.flip', which gives us direction in which the arrow will fly.
-        - arrow[2] - integer X axis position which is being constantly updated while in the loop to simulate animation.
-        - arrow[3] - static integer Y axis position to verticaly place the arrow where character currently is.
-        - arrow[4] - pygame.time.get_ticks() method to help us track the time span of each individual arrow.
+        - arrow_quiver[0] - pygame.Surface image of an arrow.
+        - arrow_quiver[1] - Boolean that derives from 'self.flip', which gives us direction in which the arrow will fly.
+        - arrow_quiver[2] - integer X axis position which is being constantly updated while in the loop to simulate animation.
+        - arrow_quiver[3] - static integer Y axis position to vertically place the arrow where character currently is.
+        - arrow_quiver[4] - pygame.time.get_ticks() method to help us track the time span of each individual arrow.
         """
         for arrow in self.arrow_quiver:
             """Direction is left"""

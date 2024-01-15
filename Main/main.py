@@ -35,7 +35,7 @@ class Game:
             """Arrow object animation, method is called only when 'arrow_quiver' list is not empty"""
             if self.player.arrow_quiver != []:
                 self.player.draw_arrow()
-            print(self.player.arrow_quiver)
+            print(self.player.bow, self.player.arrow)
             """Player character image"""
             self.player.draw_character()
 
