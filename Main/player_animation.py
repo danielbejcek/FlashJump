@@ -1,15 +1,12 @@
 import pygame
 import os
-from Images.images import img_paths
-# from Main.player import PlayerCharacter
 
 current_dir = os.path.dirname(__file__)
 screen = pygame.display.set_mode((1792, 1024))
-# player = PlayerCharacter(50,50)
+
 def animate_character(action):
     animation_list = []
     temp_list = []
-
 
     for i in os.listdir(os.path.join(current_dir,'..','Images','Characters','Player',action)):
         img = pygame.image.load(os.path.join(current_dir,'..','Images','Characters','Player',action,i))
@@ -32,6 +29,45 @@ def animate_character(action):
             animation_list.append(temp_list)
 
     return animation_list
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

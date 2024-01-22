@@ -5,8 +5,6 @@ from Images import images
 from Main.player import PlayerCharacter
 from Main.Collisions import draw_floor
 
-
-
 class Game:
     def __init__(self):
         pygame.init()

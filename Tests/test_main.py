@@ -184,11 +184,10 @@ class TestAnimationLists(unittest.TestCase):
         Calling the 'create_arrow' method in the main loop to populate list with arrow objects and verify,
         that 'draw_arrow' method is being accurately called only if the 'arrow_quiver' is not empty.
         """
-
-        # self.game.player.create_arrow()
-        # with patch.object(PlayerCharacter,'draw_arrow') as mock_draw_arrow:
-        #     self.game.run(True)
-        # mock_draw_arrow.assert_called()
+        self.game.player.create_arrow()
+        with patch.object(PlayerCharacter,'draw_arrow') as mock_draw_arrow:
+            self.game.run(True)
+        mock_draw_arrow.assert_called()
 
         """Setting up a list with 20 arrows to be removed if 'player.draw_arrow' works as intended"""
         for i in range(20):

@@ -1,7 +1,6 @@
 import pygame
 import sys
 from Images.images import img_paths
-
 from Main.player_animation import animate_character
 
 

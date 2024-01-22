@@ -1,7 +1,6 @@
 import os
 import pygame
 
-
 current_dir = os.path.dirname(__file__)
 
 """pygame init to transform images"""
@@ -19,4 +18,3 @@ img_paths = {
         }
 
 bg_img = pygame.image.load(img_paths['BG_image']).convert()
-
