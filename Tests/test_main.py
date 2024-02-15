@@ -46,7 +46,7 @@ class TestGameWindow(unittest.TestCase):
             except SystemExit:
                pass
 
-        # Assert that pygame.init() was called
+        """Assert that 'pygame.init()' was called"""
         mock_pygame_init.assert_called_once()
         mock_set_mode.assert_called_once_with((1792, 1024))
         mock_set_caption.assert_called_once_with("FlashJump")
@@ -54,8 +54,6 @@ class TestGameWindow(unittest.TestCase):
 
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
-
-
         self.game = main.Game()
 
         """Instance of player from PlayerCharacter class"""
@@ -64,21 +62,20 @@ class TestCharacterMovement(unittest.TestCase):
         self.game.player = PlayerCharacter(600,770)
 
         """Setting up x, y position from the player instance in the main.Game() which is being updated"""
-        self.img_pos = self.game.player.img_pos
+        self.game_pos = self.game.player.img_pos
 
         """Setting up x, y position from static PlayerCharacter class"""
         self.initial_pos = self.player.img_pos
 
 
-
     def tearDown(self):
-
         pass
+
     @patch('pygame.event.get')
     def test_movement_jump(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_SPACE)]
         self.game.run(True)
-        self.assertLess(self.img_pos[1],self.initial_pos[1])
+        self.assertLess(self.game_pos[1],self.initial_pos[1])
         self.assertFalse(self.game.player.movement_y[1])
         self.assertTrue(self.game.player.movement_y[0])
 
@@ -86,7 +83,7 @@ class TestCharacterMovement(unittest.TestCase):
     def test_movement_left(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_a)]
         self.game.run(True)
-        self.assertLess(self.img_pos[0], self.initial_pos[0])
+        self.assertLess(self.game_pos[0], self.initial_pos[0])
         self.assertTrue(self.game.player.movement_x[0])
         self.assertFalse(self.game.player.movement_x[1])
 
@@ -94,7 +91,7 @@ class TestCharacterMovement(unittest.TestCase):
     def test_movement_right(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_d)]
         self.game.run(True)
-        self.assertGreater(self.img_pos[0], self.initial_pos[0])
+        self.assertGreater(self.game_pos[0], self.initial_pos[0])
         self.assertTrue(self.game.player.movement_x[1])
         self.assertFalse(self.game.player.movement_x[0])
 
@@ -104,6 +101,23 @@ class TestCharacterMovement(unittest.TestCase):
         self.game.run(True)
         self.assertFalse(self.player.movement_x[0])
         self.assertFalse(self.player.movement_x[1])
+        self.assertTrue(self.game.player.bow)
+
+    @patch('pygame.event.get')
+    def test_collision(self, mock_jump):
+        mock_jump.return_value = [self.simulate_key_press(pygame.K_SPACE)]
+        """Setting the number of iterations to 90 for the animation to be able to finish the jumping sequence"""
+        self.assertEqual(self.game_pos[1],self.player.floor_test)
+        self.game.run(True, 90)
+        self.assertTrue(self.game.player.jump)
+        self.assertNotEqual(self.game_pos[1],self.player.floor_test)
+        mock_jump.return_value = [self.simulate_key_up(pygame.K_SPACE)]
+
+        with patch('pygame.time.get_ticks') as mock_time:
+            mock_time.return_value = 2000
+            mock_jump.return_value = [self.simulate_key_up(pygame.K_SPACE)]
+            self.game.run(True, 10)
+            self.assertEqual(self.game_pos[1],self.player.floor_test)
 
 
 
@@ -113,6 +127,11 @@ class TestCharacterMovement(unittest.TestCase):
         mock_event_key.key = key
         return mock_event_key
 
+    def simulate_key_up(self, key):
+        mock_event_key = MagicMock()
+        mock_event_key.type = pygame.KEYUP
+        mock_event_key.key = key
+        return mock_event_key
 class TestAnimationLists(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
@@ -133,7 +152,6 @@ class TestAnimationLists(unittest.TestCase):
 
     def tearDown(self):
         pass
-        # self.game.player.arrow_quiver.clear()
 
     """Test that 'draw_character' is called with proper arguments"""
     @patch('pygame.transform.flip')
@@ -192,7 +210,7 @@ class TestAnimationLists(unittest.TestCase):
         """Setting up a list with 20 arrows to be removed if 'player.draw_arrow' works as intended"""
         for i in range(20):
             self.game.player.create_arrow()
-
+        self.assertEqual(len(self.game.player.arrow_quiver),21)
         """
         Integration test to simulate removal of the arrows from the 'arrow_quiver'. 
         After we created 20 arrows, it takes 5 iterations to completely remove them from the list.
@@ -204,7 +222,7 @@ class TestAnimationLists(unittest.TestCase):
             """
             mock_time.return_value = 10000
             self.game.run(True,5)
-            print(len(self.game.player.arrow_quiver),"Arrows left in quiver")
+            # print(len(self.game.player.arrow_quiver),"Arrows left in quiver")
             self.assertEqual(len(self.game.player.arrow_quiver),0)
 
 

@@ -34,10 +34,15 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.bow_start_time = None
         self.bow_duration = 650
 
+        """Attack animation variables"""
+        self.attack = False
+        self.attack_animation = 'Attack_1'
+        self.attack_start_time = None
+        self.attack_duration = 700
+
         """Arrow object variables"""
         self.arrow = False
         self.arrow_y = self.img_pos[1] + 53
-        # self.arrow_x = None
         self.arrow_x = self.img_pos[0]
         self.arrow_direction = True
         self.arrow_quiver = []
@@ -88,7 +93,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
                 sys.exit()
 
             if self.jump == False:
-                if event.type == pygame.KEYDOWN and self.bow == False:
+                # if event.type == pygame.KEYDOWN and self.bow == False and self.attack == False:
+                if event.type == pygame.KEYDOWN and not any([self.bow, self.attack]):
                     self.action, self.action_divider = 'Running', 1
 
                     """X axis"""
@@ -120,9 +126,16 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         if not self.flip:
                             self.arrow_x = self.img_pos[0]
 
+                    """Attack animation"""
+                    if event.key == pygame.K_q:
+                        self.attack = True
+                        self.frame_index = 0
+                        self.attack_start_time = pygame.time.get_ticks()
+
+
+
                 if event.type == pygame.KEYUP:
                     self.action, self.action_divider = 'Idle', 0
-
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -138,7 +151,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
                             self.flip = True
 
             """Jump action movement control"""
-            if self.jump == True and self.bow == False:
+            # if self.jump == True and self.bow == False and self.attack == False:
+            if self.jump == True and not any([self.bow, self.attack]):
                 if event.type == pygame.KEYDOWN:
                     self.action, self.action_divider = 'Jump', 2
 
@@ -168,7 +182,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
                             self.flip = True
 
     def update_animation(self):
-
         """
         self.image controls the image generator. We are accessing the list which is returned from animate_character function.
         We pass 'self.action_divider' that controls the nature of the action (idle, running etc...) 
@@ -184,6 +197,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         if self.frame_index >= len(animate_character(self.action)[self.action_divider]):
             self.frame_index = 0
 
+        """Jump animation configuration"""
         if self.jump_start_time is not None:
             current_jump_time = pygame.time.get_ticks()
             """Increase Y axis while jump is active"""
@@ -195,6 +209,36 @@ class PlayerCharacter(pygame.sprite.Sprite):
                 self.movement_y[0] = False
                 self.movement_y[1] = True
                 self.jump_start_time = None
+
+        """Attack animation"""
+        if self.attack == True:
+
+            """X axis set to False to prevent the character from moving when performing the attack animation"""
+            self.movement_x = [False, False]
+            self.action, self.action_divider = self.attack_animation, 4
+            self.image = animate_character(self.action)[self.action_divider][self.frame_index]
+
+            """Condition is triggered after the attack animation is finished"""
+            if pygame.time.get_ticks() - self.attack_start_time > self.attack_duration:
+                self.attack = False
+                self.attack_start_time = None
+                if self.attack_animation == 'Attack_1':
+                    self.attack_animation = 'Attack_2'
+                else:
+                    self.attack_animation = 'Attack_1'
+
+                """Helper conditions that allow fluent movement if any of the direction keys is pressed while performing the attack"""
+                if pygame.key.get_pressed()[pygame.K_d] and not pygame.key.get_pressed()[pygame.K_e]:
+                    self.movement_x[1] = True
+                    self.motion_right = True
+                    self.flip = False
+
+                if pygame.key.get_pressed()[pygame.K_a] and not pygame.key.get_pressed()[pygame.K_e]:
+                    self.movement_x[0] = True
+                    self.motion_left = True
+                    self.flip = True
+
+
 
         """Bow animation"""
         if self.bow == True:
@@ -228,7 +272,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     self.motion_left = True
                     self.flip = True
 
-
                 """Arrow animation"""
                 if self.arrow == True:
                     self.create_arrow()
@@ -252,7 +295,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         - arrow_quiver[1] - Boolean that derives from 'self.flip', which gives us direction in which the arrow will fly.
         - arrow_quiver[2] - integer X axis position which is being constantly updated while in the loop to simulate animation.
         - arrow_quiver[3] - static integer Y axis position to vertically place the arrow where character currently is.
-        - arrow_quiver[4] - pygame.time.get_ticks() method to help us track the time span of each individual arrow.
+        - arrow_quiver[4] - pygame.time.get_ticks() method to help us track the life span of each individual arrow.
         """
         for index, arrow in enumerate(self.arrow_quiver):
             """Direction is left"""

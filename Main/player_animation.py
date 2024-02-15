@@ -28,6 +28,15 @@ def animate_character(action):
             temp_list.append(img)
             animation_list.append(temp_list)
 
+        if action == 'Attack_1':
+            temp_list.append(img)
+            animation_list.append(temp_list)
+
+        if action == 'Attack_2':
+            temp_list.append(img)
+            animation_list.append(temp_list)
+
+
     return animation_list
 
 
