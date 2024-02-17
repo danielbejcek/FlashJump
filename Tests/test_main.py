@@ -145,7 +145,7 @@ class TestAnimationLists(unittest.TestCase):
         self.initial_pos = self.player.img_pos
 
         """Action list to simulate animations"""
-        self.actions_list = ['Idle','Running','Jump','Bow']
+        self.actions_list = ['Idle','Running','Jump','Bow','Attack_1','Attack_2','Landing']
 
         self.mock_surface = pygame.Surface((1,1))
 
@@ -222,7 +222,7 @@ class TestAnimationLists(unittest.TestCase):
             """
             mock_time.return_value = 10000
             self.game.run(True,5)
-            # print(len(self.game.player.arrow_quiver),"Arrows left in quiver")
+            print(len(self.game.player.arrow_quiver),"Arrows left in quiver")
             self.assertEqual(len(self.game.player.arrow_quiver),0)
 
 
