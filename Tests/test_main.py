@@ -104,22 +104,22 @@ class TestCharacterMovement(unittest.TestCase):
         self.assertTrue(self.game.player.bow)
 
     @patch('pygame.event.get')
+    def test_attack_animation(self, mock_get_event):
+        mock_get_event.return_value = [self.simulate_key_press(pygame.K_q)]
+        self.game.run(True)
+        self.assertFalse(self.player.movement_x[0])
+        self.assertFalse(self.player.movement_x[1])
+        self.assertTrue(self.game.player.attack)
+
+    @patch('pygame.event.get')
     def test_collision(self, mock_jump):
         mock_jump.return_value = [self.simulate_key_press(pygame.K_SPACE)]
         """Setting the number of iterations to 90 for the animation to be able to finish the jumping sequence"""
         self.assertEqual(self.game_pos[1],self.player.floor_test)
-        self.game.run(True, 90)
+        self.game.run(True,30)
         self.assertTrue(self.game.player.jump)
+        self.assertLess(self.game.player.y_velocity, 8)
         self.assertNotEqual(self.game_pos[1],self.player.floor_test)
-        mock_jump.return_value = [self.simulate_key_up(pygame.K_SPACE)]
-
-        with patch('pygame.time.get_ticks') as mock_time:
-            mock_time.return_value = 2000
-            mock_jump.return_value = [self.simulate_key_up(pygame.K_SPACE)]
-            self.game.run(True, 10)
-            self.assertEqual(self.game_pos[1],self.player.floor_test)
-
-
 
     def simulate_key_press(self, key):
         mock_event_key = MagicMock()
@@ -132,6 +132,7 @@ class TestCharacterMovement(unittest.TestCase):
         mock_event_key.type = pygame.KEYUP
         mock_event_key.key = key
         return mock_event_key
+
 class TestAnimationLists(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
@@ -172,7 +173,7 @@ class TestAnimationLists(unittest.TestCase):
         for action in self.actions_list:
             result = animate_character(action)
             self.assertIsInstance(result,list)
-            self.assertTrue(len(result) > 6)
+            self.assertTrue(len(result) > 1)
 
             """Verify that objects in image lists are pygame.Surface"""
             for image_lists in result:

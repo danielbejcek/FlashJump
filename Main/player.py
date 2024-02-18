@@ -23,12 +23,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.movement_x = [False, False]
         self.img_pos = [x, y]
         self.flip = False
-        self.y_velocity = 6
+        self.y_velocity = 8
         self.x_velocity = 4
 
         """Jump animation variables"""
         self.jump = False
-        self.jump_height = 250
+        self.jump_height = 200
         self.jump_init_pos = None
         self.peak = False
 
@@ -107,7 +107,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
                     """Y axis"""
                     if event.key == pygame.K_SPACE:
-                        self.y_velocity = 6
+                        self.y_velocity = 8
                         self.jump_init_pos = self.img_pos[1]
                         self.jump = True
                         self.peak = False
@@ -195,24 +195,21 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Jump animation configuration"""
         if self.jump:
             if not self.peak:
+                """'self.peak' defines a final point of the jump animation, 'self.y_velocity' is decreasing until this point is reached"""
                 if self.img_pos[1] >= (self.jump_init_pos - self.jump_height):
-                    self.y_velocity -= .07
+                    self.y_velocity -= .15
                     self.action, self.action_divider = 'Jump', 2
                     self.movement_y[0] = True
                     self.movement_y[1] = False
-                    print("INIT",self.jump_init_pos)
-                    print(self.img_pos[1])
 
                 if self.img_pos[1] <= (self.jump_init_pos - self.jump_height):
                     self.peak = True
 
-
             if self.peak:
-                self.y_velocity += .5
+                self.y_velocity += .2
                 self.action, self.action_divider = 'Landing', 6
                 self.movement_y[0] = False
                 self.movement_y[1] = True
-
 
         """Attack animation"""
         if self.attack:
