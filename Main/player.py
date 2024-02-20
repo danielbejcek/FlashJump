@@ -32,7 +32,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.jump_init_pos = None
         self.peak = False
 
-
         """Bow animation variables"""
         self.bow = False
         self.bow_start_time = None
@@ -234,12 +233,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     self.attack_animation = 'Attack_1'
 
                 """Helper conditions that allow fluent movement if any of the direction keys is pressed while performing the attack"""
-                if pygame.key.get_pressed()[pygame.K_d] and not pygame.key.get_pressed()[pygame.K_e]:
+                if pygame.key.get_pressed()[pygame.K_d] and not pygame.key.get_pressed()[pygame.K_a]:
                     self.movement_x[1] = True
                     self.motion_right = True
                     self.flip = False
 
-                if pygame.key.get_pressed()[pygame.K_a] and not pygame.key.get_pressed()[pygame.K_e]:
+                if pygame.key.get_pressed()[pygame.K_a] and not pygame.key.get_pressed()[pygame.K_d]:
                     self.movement_x[0] = True
                     self.motion_left = True
                     self.flip = True

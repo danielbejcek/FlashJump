@@ -9,7 +9,7 @@ screen = pygame.display.set_mode((1792, 1024))
 
 
 img_paths = {
-            "BG_image": os.path.join(current_dir, '..', 'Images', 'BG_MAIN.png'),
+            "BG_image": os.path.join(current_dir, '..', 'Images', 'Background','main_bg.jpg'),
             "character_img": os.path.join(current_dir, '..', 'Images','Characters','character.png'),
             "char_idle": os.path.join(current_dir,'..','Images','Characters','Player','Idle','0.png'),
             "leaf_particle_1": os.path.join(current_dir,'..', 'Images', 'Particles', 'leaf_particle_1.png'),

@@ -116,10 +116,11 @@ class TestCharacterMovement(unittest.TestCase):
         mock_jump.return_value = [self.simulate_key_press(pygame.K_SPACE)]
         """Setting the number of iterations to 90 for the animation to be able to finish the jumping sequence"""
         self.assertEqual(self.game_pos[1],self.player.floor_test)
-        self.game.run(True,30)
+        self.game.run(True,90)
         self.assertTrue(self.game.player.jump)
         self.assertLess(self.game.player.y_velocity, 8)
         self.assertNotEqual(self.game_pos[1],self.player.floor_test)
+
 
     def simulate_key_press(self, key):
         mock_event_key = MagicMock()
@@ -157,7 +158,7 @@ class TestAnimationLists(unittest.TestCase):
     """Test that 'draw_character' is called with proper arguments"""
     @patch('pygame.transform.flip')
     def test_draw_character(self,mock_flip):
-        pygame.init()
+
         self.player.screen = MagicMock()
 
         self.player.image = pygame.Surface((1,1))
