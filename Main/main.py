@@ -20,10 +20,10 @@ class Game:
         iteration = 0
 
         while True and iteration < max_iterations:
-            """Main background image"""
-            images.screen.blit(images.bg_img, (0,0))
+            """Main images function"""
+            images.draw_background()
 
-            draw_floor()
+
 
             """Main method for updating the character's animation (Idle, running, jumping, shooting from a bow)"""
             self.player.update_animation()
