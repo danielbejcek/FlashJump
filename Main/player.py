@@ -73,6 +73,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * self.y_velocity
 
         """Help conditions to manipulate character more precisely after touching the ground or transferring from a different animation"""
+        """Conditions that set X axis boundaries"""
+        if self.img_pos[0] <= 0:
+            self.movement_x[0] = False
+        if self.img_pos[0] >= 1680:
+            self.movement_x[1] = False
+
         if self.img_pos[1] >= self.floor_test:
             self.img_pos[1] = self.floor_test
             self.action, self.action_divider = 'Idle', 0
