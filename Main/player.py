@@ -74,32 +74,14 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Y axis position"""
         self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * self.y_velocity
 
-        """Help conditions to manipulate character more precisely after touching the ground or transferring from a different animation"""
-
-        """Conditions that set X axis boundaries"""
-        if self.img_pos[0] <= -50:
-            self.movement_x[0] = False
-        if self.img_pos[0] >= 1680:
-            self.movement_x[1] = False
-
-
-        # if self.img_pos[1] >= self.floor_test:
-        #     self.img_pos[1] = self.floor_test
-        # if self.img_pos[1] >= platform_collision:
-        #     self.img_pos[1] = platform_collision
-        #
-        #     self.action, self.action_divider = 'Idle', 0
-        #     self.jump = False
-        #
-
-
         """Main player animation loop"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            if self.jump == False:
+            """Controls for player when character is touching the ground"""
+            if self.touchdown == True:
                 if event.type == pygame.KEYDOWN and not any([self.bow, self.attack]):
 
                     """X axis"""
@@ -155,7 +137,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
                             self.flip = True
 
             """Jump action movement control"""
-            if self.jump == True and not any([self.bow, self.attack]):
+            if self.touchdown == False and not any([self.bow, self.attack]):
                 if event.type == pygame.KEYDOWN:
 
                     """X axis"""
@@ -183,8 +165,20 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         if self.motion_left:
                             self.flip = True
 
-    """Method that checks for character's position. Whenever the player is touching the ground. 'self.touchdown' is set to True"""
+    """
+    Method that checks for character's position. 
+    Whenever the player is touching the ground, 'self.touchdown' is set to True.
+    Whenever player is airborne, 'self.touchdown' is set to False.
+    The main movement of the character's apparatus is changing according to this variable
+    """
     def check_collision(self, platform):
+        """Conditions that set X axis boundaries of the edge of the screen"""
+        if self.img_pos[0] <= -50:
+            self.movement_x[0] = False
+        if self.img_pos[0] >= 1680:
+            self.movement_x[1] = False
+
+        """Conditions that set Y axis"""
         if self.img_pos[1] >= platform - self.image.get_height():
             self.img_pos[1] = platform - self.image.get_height()
             self.peak = False
@@ -196,7 +190,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
             if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
                 self.action, self.action_divider = 'Idle', 0
-
         else:
             self.touchdown = False
 
@@ -227,7 +220,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     self.movement_y[0] = True
                     self.movement_y[1] = False
 
-                """Breakpoint of the climb, reseting the 'self.jump' animation back to False"""
+                """Breakpoint of the climb, resets the 'self.jump' animation back to False"""
                 if self.img_pos[1] <= (self.jump_init_pos - self.jump_height):
                     self.peak = True
                     self.jump = False
