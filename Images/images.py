@@ -23,7 +23,6 @@ bg_img = pygame.image.load(img_paths['BG_image']).convert()
 
 """Main floor platform"""
 platform_0 = pygame.image.load(img_paths['platform_0'])
-
 platform_0.get_rect()
 
 platform_1 = pygame.image.load(img_paths['platform_1'])

@@ -2,6 +2,7 @@ import pygame
 import sys
 from Images.images import img_paths
 from Main.player_animation import animate_character
+from Main.collisions import platform_collision
 
 
 class PlayerCharacter(pygame.sprite.Sprite):
@@ -24,10 +25,11 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.img_pos = [x, y]
         self.flip = False
         self.y_velocity = 8
-        self.x_velocity = 4
+        self.x_velocity = 5
 
         """Jump animation variables"""
         self.jump = False
+        self.touchdown = False
         self.jump_height = 200
         self.jump_init_pos = None
         self.peak = False
@@ -51,9 +53,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.arrow_quiver = []
         self.arrow_duration = 3000
 
-        """Collision floor temporary var"""
-        self.floor_test = 770
-        self.image = pygame.Surface((1,1))
+        """Initial image object"""
+        self.image = pygame.Surface((128,128))
 
         """
         Variables that help control the movement of the character. When user presses 'Key_A' to run left and right after 'Key_D' to run right,
@@ -65,6 +66,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
     def draw_character(self):
         self.screen.blit(pygame.transform.flip(self.image, self.flip, False), self.img_pos)
 
+
     def player_movement(self):
         """X axis position"""
         self.img_pos[0] += (self.movement_x[1] - self.movement_x[0]) * self.x_velocity
@@ -73,22 +75,23 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * self.y_velocity
 
         """Help conditions to manipulate character more precisely after touching the ground or transferring from a different animation"""
+
         """Conditions that set X axis boundaries"""
-        if self.img_pos[0] <= 0:
+        if self.img_pos[0] <= -50:
             self.movement_x[0] = False
         if self.img_pos[0] >= 1680:
             self.movement_x[1] = False
 
-        if self.img_pos[1] >= self.floor_test:
-            self.img_pos[1] = self.floor_test
-            self.action, self.action_divider = 'Idle', 0
-            self.jump = False
 
-            if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
-                self.action, self.action_divider = 'Running', 1
+        # if self.img_pos[1] >= self.floor_test:
+        #     self.img_pos[1] = self.floor_test
+        # if self.img_pos[1] >= platform_collision:
+        #     self.img_pos[1] = platform_collision
+        #
+        #     self.action, self.action_divider = 'Idle', 0
+        #     self.jump = False
+        #
 
-            if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
-                self.action, self.action_divider = 'Idle', 0
 
         """Main player animation loop"""
         for event in pygame.event.get():
@@ -112,11 +115,11 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
                     """Y axis"""
                     if event.key == pygame.K_SPACE:
+                        self.jump = True
+                        self.touchdown = False
                         self.y_velocity = 8
                         self.jump_init_pos = self.img_pos[1]
-                        self.jump = True
-                        self.peak = False
-                        self.jump_start_time = pygame.time.get_ticks()
+
 
                     """Bow animation"""
                     if event.key == pygame.K_e:
@@ -138,7 +141,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         self.attack_start_time = pygame.time.get_ticks()
 
                 if event.type == pygame.KEYUP:
-
                     """X axis"""
                     if event.key == pygame.K_a:
                         self.motion_left = False
@@ -181,11 +183,29 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         if self.motion_left:
                             self.flip = True
 
+    """Method that checks for character's position. Whenever the player is touching the ground. 'self.touchdown' is set to True"""
+    def check_collision(self, platform):
+        if self.img_pos[1] >= platform - self.image.get_height():
+            self.img_pos[1] = platform - self.image.get_height()
+            self.peak = False
+            self.touchdown = True
+            self.action, self.action_divider = 'Idle', 0
+
+            if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
+                self.action, self.action_divider = 'Running', 1
+
+            if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
+                self.action, self.action_divider = 'Idle', 0
+
+        else:
+            self.touchdown = False
+
+
     def update_animation(self):
         """
         self.image controls the image generator. We are accessing the list which is returned from animate_character function.
         We pass 'self.action_divider' that controls the nature of the action (idle, running etc...) 
-        and 'self.frame_index' which allows the animation to always start from index 0 whenever a new action is introduced.
+        and 'self.frame_index' which allows the animation to always start from index 0 whenever a new action is introduced to prevent a 'list index out of range'.
         """
         self.image = animate_character(self.action)[self.action_divider][self.frame_index]
 
@@ -207,14 +227,19 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     self.movement_y[0] = True
                     self.movement_y[1] = False
 
+                """Breakpoint of the climb, reseting the 'self.jump' animation back to False"""
                 if self.img_pos[1] <= (self.jump_init_pos - self.jump_height):
                     self.peak = True
+                    self.jump = False
 
-            if self.peak:
-                self.y_velocity += .2
-                self.action, self.action_divider = 'Landing', 6
-                self.movement_y[0] = False
-                self.movement_y[1] = True
+        """Once player reaches the 'self.peak', descending sequence is initialized"""
+        if self.peak:
+            self.y_velocity += .2
+            self.action, self.action_divider = 'Landing', 6
+            self.movement_y[0] = False
+            self.movement_y[1] = True
+
+
 
         """Attack animation"""
         if self.attack:
@@ -324,9 +349,4 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     self.screen.blit((arrow[0]), (arrow[2] + 100, arrow[3]))
                 else:
                     self.arrow_quiver.pop(index)
-
-
-
-
-
 
