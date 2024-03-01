@@ -53,6 +53,7 @@ class TestCharacterMovement(unittest.TestCase):
 
         """Instance of player from PlayerCharacter class"""
         self.player = PlayerCharacter(600,895)
+
         """Instance from main game loop"""
         self.game.player = PlayerCharacter(600,895)
 
@@ -63,7 +64,8 @@ class TestCharacterMovement(unittest.TestCase):
         self.initial_pos = self.player.img_pos
 
         """Setting up a collision object"""
-        self.floor_platform = platform_collision(self.game_pos, self.player.image)
+        self.floor_platform = platform_collision(self.game_pos, self.game.player.image)
+
 
     def tearDown(self):
         pass
@@ -71,8 +73,9 @@ class TestCharacterMovement(unittest.TestCase):
     @patch('pygame.event.get')
     def test_movement_jump(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_SPACE)]
-        self.game.run(True,90)
+        self.game.run(True,100)
         self.assertLess(self.game_pos[1],self.initial_pos[1])
+        self.assertTrue(self.game.player.jump)
         self.assertFalse(self.game.player.movement_y[1])
         self.assertTrue(self.game.player.movement_y[0])
 
@@ -116,15 +119,20 @@ class TestCharacterMovement(unittest.TestCase):
         self.assertFalse(self.player.movement_x[1])
         self.assertTrue(self.game.player.attack)
 
-    @patch('pygame.event.get')
-    def test_collision(self, mock_jump):
-        mock_jump.return_value = [self.simulate_key_press(pygame.K_SPACE)]
-        """Setting the number of iterations to 90 for the animation to be able to finish the jumping sequence"""
-        self.assertEqual(self.game_pos[1],self.floor_platform)
-        self.game.run(True,90)
-        self.assertTrue(self.game.player.jump)
-        self.assertLess(self.game.player.y_velocity, 8)
-        self.assertNotEqual(self.game_pos[1],self.floor_platform)
+    """
+    Test how the character reacts to collision after being dropped from Y coordinate of 500.
+    After we process 40 iterations of the in-game loop, the character should be now leveled
+    with the 'self.floor_platform'
+    """
+    def test_collision(self):
+        self.game_pos[1] = 500
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game_pos[1], self.floor_platform)
+        self.game.run(True, 40)
+
+        """Subtracting '151' from the 'self.floor_platform' to compensate for the player image size."""
+        self.assertEqual(self.game_pos[1], (self.floor_platform-151))
+        self.assertTrue(self.game.player.touchdown)
 
     def simulate_key_press(self, key):
         mock_event_key = MagicMock()

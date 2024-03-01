@@ -22,6 +22,7 @@ class Game:
             """Main images function"""
             draw_background()
 
+            """Method that checks for collision and adjusts the character position accordingly"""
             floor_platform = platform_collision(self.player.img_pos, self.player.image)
             self.player.check_collision(floor_platform)
 
