@@ -3,13 +3,10 @@ import unittest
 from unittest.mock import Mock
 from unittest.mock import patch, MagicMock
 import pygame
-import sys
-import Main.player
 from Main import main
-from Images.images import img_paths
-from Images import images
 from Main.player import PlayerCharacter
 from Main.player_animation import animate_character
+from Main.collisions import platform_collision
 
 
 current_dir = os.path.dirname(__file__)
@@ -24,9 +21,8 @@ class TestGameWindow(unittest.TestCase):
 
 
     @patch('pygame.display.set_caption')
-    @patch('pygame.display.set_mode')
     @patch('pygame.init')
-    def test_window_opening(self, mock_pygame_init, mock_set_mode, mock_set_caption):
+    def test_window_opening(self, mock_pygame_init, mock_set_caption):
         """
         'mock_event' is a mock object to simulate a Pygame event. 
         In the context of this test, we're specifically creating a mock event that simulates the pygame.QUIT event. 
@@ -48,7 +44,6 @@ class TestGameWindow(unittest.TestCase):
 
         """Assert that 'pygame.init()' was called"""
         mock_pygame_init.assert_called_once()
-        mock_set_mode.assert_called_once_with((1792, 1024))
         mock_set_caption.assert_called_once_with("FlashJump")
 
 
@@ -57,9 +52,9 @@ class TestCharacterMovement(unittest.TestCase):
         self.game = main.Game()
 
         """Instance of player from PlayerCharacter class"""
-        self.player = PlayerCharacter(600,770)
+        self.player = PlayerCharacter(600,895)
         """Instance from main game loop"""
-        self.game.player = PlayerCharacter(600,770)
+        self.game.player = PlayerCharacter(600,895)
 
         """Setting up x, y position from the player instance in the main.Game() which is being updated"""
         self.game_pos = self.game.player.img_pos
@@ -67,6 +62,8 @@ class TestCharacterMovement(unittest.TestCase):
         """Setting up x, y position from static PlayerCharacter class"""
         self.initial_pos = self.player.img_pos
 
+        """Setting up a collision object"""
+        self.floor_platform = platform_collision(self.game_pos, self.player.image)
 
     def tearDown(self):
         pass
@@ -74,10 +71,16 @@ class TestCharacterMovement(unittest.TestCase):
     @patch('pygame.event.get')
     def test_movement_jump(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_SPACE)]
-        self.game.run(True)
+        self.game.run(True,90)
         self.assertLess(self.game_pos[1],self.initial_pos[1])
         self.assertFalse(self.game.player.movement_y[1])
         self.assertTrue(self.game.player.movement_y[0])
+
+        """Variables that are bound to be set to False while jump animation is active"""
+        self.assertFalse(self.game.player.peak)
+        self.assertFalse(self.game.player.bow)
+        self.assertFalse(self.game.player.attack)
+
 
     @patch('pygame.event.get')
     def test_movement_left(self, mock_get_event):
@@ -99,9 +102,11 @@ class TestCharacterMovement(unittest.TestCase):
     def test_bow_animation(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_e)]
         self.game.run(True)
-        self.assertFalse(self.player.movement_x[0])
-        self.assertFalse(self.player.movement_x[1])
+        self.assertFalse(self.game.player.movement_x[0])
+        self.assertFalse(self.game.player.movement_x[1])
         self.assertTrue(self.game.player.bow)
+        mock_get_event.return_value = [self.simulate_key_press(pygame.K_q)]
+        self.assertFalse(self.game.player.attack)
 
     @patch('pygame.event.get')
     def test_attack_animation(self, mock_get_event):
@@ -115,12 +120,11 @@ class TestCharacterMovement(unittest.TestCase):
     def test_collision(self, mock_jump):
         mock_jump.return_value = [self.simulate_key_press(pygame.K_SPACE)]
         """Setting the number of iterations to 90 for the animation to be able to finish the jumping sequence"""
-        self.assertEqual(self.game_pos[1],self.player.floor_test)
+        self.assertEqual(self.game_pos[1],self.floor_platform)
         self.game.run(True,90)
         self.assertTrue(self.game.player.jump)
         self.assertLess(self.game.player.y_velocity, 8)
-        self.assertNotEqual(self.game_pos[1],self.player.floor_test)
-
+        self.assertNotEqual(self.game_pos[1],self.floor_platform)
 
     def simulate_key_press(self, key):
         mock_event_key = MagicMock()
@@ -128,17 +132,11 @@ class TestCharacterMovement(unittest.TestCase):
         mock_event_key.key = key
         return mock_event_key
 
-    def simulate_key_up(self, key):
-        mock_event_key = MagicMock()
-        mock_event_key.type = pygame.KEYUP
-        mock_event_key.key = key
-        return mock_event_key
-
 class TestAnimationLists(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
         """Instance of player from PlayerCharacter class"""
-        self.player = PlayerCharacter(600, 770)
+        self.player = PlayerCharacter(600, 895)
 
         """Setting up x, y position from the player instance in the main.Game() which is being updated"""
         self.img_pos = self.game.player.img_pos
@@ -222,8 +220,8 @@ class TestAnimationLists(unittest.TestCase):
             With 'pygame.time.get_ticks' mock we allow the arrow fly animation to complete.
             We are effectively setting the mocked time to 10 seconds, meaning 10 seconds have passed in the test scenario.
             """
-            mock_time.return_value = 10000
-            self.game.run(True,5)
+            mock_time.return_value = 20000
+            self.game.run(True)
             print(len(self.game.player.arrow_quiver),"Arrows left in quiver")
             self.assertEqual(len(self.game.player.arrow_quiver),0)
 

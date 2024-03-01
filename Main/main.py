@@ -11,10 +11,10 @@ class Game:
         pygame.init()
         pygame.display.set_caption("FlashJump")
         self.clock = pygame.time.Clock()
-        self.player = PlayerCharacter(600,700)
+        self.player = PlayerCharacter(600,895)
         self.screen = self.player.screen
 
-    def run(self,test_case=False, max_iterations=20):
+    def run(self,test_case=False, max_iterations=50):
         """Setting up a test case scenario to a limited number of iterations"""
         iteration = 0
 
@@ -32,7 +32,7 @@ class Game:
             self.player.update_animation()
 
             # print("JUMP:",self.player.jump)
-            print("TD:",self.player.touchdown)
+            # print("TD:",self.player.touchdown)
             # print("PEAK:",self.player.peak)
 
             """Arrow object animation, method is called only when 'arrow_quiver' list is not empty"""

@@ -5,9 +5,8 @@ def platform_collision(character_pos, character_img):
     floor_platform = floor.top
 
     character_rect = character_img.get_rect(topleft=character_pos)
+
     # pygame.draw.rect(screen, (0, 0, 0,), floor)
-
-
     # if character_rect.colliderect(floor):
     #     pygame.draw.rect(screen, (255, 0, 0,), floor)
     # else:

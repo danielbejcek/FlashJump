@@ -15,6 +15,9 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Serves as a divider between actions. 0 is for idle, 1 is for running etc..."""
         self.action_divider = 0
 
+        """Initial image object"""
+        self.image = pygame.Surface((128, 128))
+
         """'self.frame_index' serves to access the specific image as an index in a 'animation_list' received from 'animate_character' function."""
         self.frame_index = 0
         self.update_time = pygame.time.get_ticks()
@@ -47,14 +50,13 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         """Arrow object variables"""
         self.arrow = False
-        self.arrow_y = self.img_pos[1] + 53
+        self.arrow_y = self.img_pos[1] - (self.image.get_height() - 30)
         self.arrow_x = self.img_pos[0]
         self.arrow_direction = True
         self.arrow_quiver = []
         self.arrow_duration = 3000
 
-        """Initial image object"""
-        self.image = pygame.Surface((128,128))
+
 
         """
         Variables that help control the movement of the character. When user presses 'Key_A' to run left and right after 'Key_D' to run right,
@@ -231,8 +233,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
             self.action, self.action_divider = 'Landing', 6
             self.movement_y[0] = False
             self.movement_y[1] = True
-
-
 
         """Attack animation"""
         if self.attack:
