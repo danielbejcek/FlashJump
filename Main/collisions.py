@@ -1,7 +1,7 @@
 import pygame
 
 def platform_collision(character_pos, character_img):
-    floor = pygame.Rect(0, 895, 1792, 100)
+    floor = pygame.Rect(0, 892, 1792, 100)
     floor_platform = floor.top
 
     character_rect = character_img.get_rect(topleft=character_pos)

@@ -11,7 +11,7 @@ class Game:
         pygame.init()
         pygame.display.set_caption("FlashJump")
         self.clock = pygame.time.Clock()
-        self.player = PlayerCharacter(600,895)
+        self.player = PlayerCharacter(600,600)
         self.screen = self.player.screen
 
     def run(self,test_case=False, max_iterations=50):

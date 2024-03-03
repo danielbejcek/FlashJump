@@ -175,9 +175,9 @@ class PlayerCharacter(pygame.sprite.Sprite):
     """
     def check_collision(self, platform):
         """Conditions that set X axis boundaries of the edge of the screen"""
-        if self.img_pos[0] <= -50:
+        if self.img_pos[0] <= -30:
             self.movement_x[0] = False
-        if self.img_pos[0] >= 1680:
+        if self.img_pos[0] >= 1670:
             self.movement_x[1] = False
 
         """Conditions that set Y axis"""

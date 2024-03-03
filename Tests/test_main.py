@@ -130,7 +130,7 @@ class TestCharacterMovement(unittest.TestCase):
         self.assertNotEqual(self.game_pos[1], self.floor_platform)
         self.game.run(True, 40)
 
-        """Subtracting '151' from the 'self.floor_platform' to compensate for the player image size."""
+        """Subtracting '151' from the 'self.floor_platform' to compensate for the player's vertical length of the image."""
         self.assertEqual(self.game_pos[1], (self.floor_platform-151))
         self.assertTrue(self.game.player.touchdown)
 
