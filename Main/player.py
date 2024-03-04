@@ -16,7 +16,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.action_divider = 0
 
         """Initial image object"""
-        self.image = pygame.Surface((128, 128))
+        self.image = pygame.Surface((0, 0))
 
         """'self.frame_index' serves to access the specific image as an index in a 'animation_list' received from 'animate_character' function."""
         self.frame_index = 0
@@ -55,8 +55,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.arrow_direction = True
         self.arrow_quiver = []
         self.arrow_duration = 3000
-
-
 
         """
         Variables that help control the movement of the character. When user presses 'Key_A' to run left and right after 'Key_D' to run right,
@@ -173,27 +171,34 @@ class PlayerCharacter(pygame.sprite.Sprite):
     Whenever player is airborne, 'self.touchdown' is set to False.
     The main movement of the character's apparatus is changing according to this variable
     """
-    def check_collision(self, platform):
+    def check_collision(self, platform_list):
+
         """Conditions that set X axis boundaries of the edge of the screen"""
         if self.img_pos[0] <= -30:
             self.movement_x[0] = False
         if self.img_pos[0] >= 1670:
             self.movement_x[1] = False
 
-        """Conditions that set Y axis"""
-        if self.img_pos[1] >= platform - self.image.get_height():
-            self.img_pos[1] = platform - self.image.get_height()
-            self.peak = False
-            self.touchdown = True
-            self.action, self.action_divider = 'Idle', 0
+        for platform in platform_list:
+            self.character_rect = self.image.get_rect(topleft=self.img_pos)
 
-            if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
-                self.action, self.action_divider = 'Running', 1
 
-            if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
+            """Conditions that set Y axis"""
+            if self.character_rect.colliderect(platform) and self.jump == False:
+
+                self.img_pos[1] = platform.top - self.image.get_height()
+                self.peak = False
+                self.touchdown = True
                 self.action, self.action_divider = 'Idle', 0
-        else:
-            self.touchdown = False
+
+
+                if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
+                    self.action, self.action_divider = 'Running', 1
+
+                if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
+                    self.action, self.action_divider = 'Idle', 0
+            else:
+                self.touchdown = False
 
 
     def update_animation(self):

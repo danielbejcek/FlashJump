@@ -11,7 +11,7 @@ class Game:
         pygame.init()
         pygame.display.set_caption("FlashJump")
         self.clock = pygame.time.Clock()
-        self.player = PlayerCharacter(600,600)
+        self.player = PlayerCharacter(600,300)
         self.screen = self.player.screen
 
     def run(self,test_case=False, max_iterations=50):
@@ -22,9 +22,14 @@ class Game:
             """Main images function"""
             draw_background()
 
+            print(self.player.touchdown)
+            """Test character square"""
+            character_rect = self.player.image.get_rect(topleft=self.player.img_pos)
+            pygame.draw.rect(self.screen, (255, 0, 0), character_rect, 2)
+
             """Method that checks for collision and adjusts the character position accordingly"""
-            floor_platform = platform_collision(self.player.img_pos, self.player.image)
-            self.player.check_collision(floor_platform)
+            platform = platform_collision(self.screen,self.player.img_pos, self.player.image)
+            self.player.check_collision(platform)
 
             """Controls the movement of the player character"""
             self.player.player_movement()
