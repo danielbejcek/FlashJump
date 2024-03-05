@@ -56,6 +56,9 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.arrow_quiver = []
         self.arrow_duration = 3000
 
+        """Hitbox"""
+        self.hitbox = None
+
         """
         Variables that help control the movement of the character. When user presses 'Key_A' to run left and right after 'Key_D' to run right,
         character will stop and enter 'Idle' animation, until one of the keys is released.
@@ -63,10 +66,15 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.motion_left = False
         self.motion_right = False
 
+    """Creating a custom hitbox to better control the character collisions"""
+    def update_hitbox(self,x,y):
+        self.hitbox = (x + 53, y + 70,55,90)
+        return self.hitbox
+
     def draw_character(self):
         self.screen.blit(pygame.transform.flip(self.image, self.flip, False), self.img_pos)
 
-
+    """Main method of the player's movement apparatus"""
     def player_movement(self):
         """X axis position"""
         self.img_pos[0] += (self.movement_x[1] - self.movement_x[0]) * self.x_velocity
@@ -166,39 +174,27 @@ class PlayerCharacter(pygame.sprite.Sprite):
                             self.flip = True
 
     """
-    Method that checks for character's position. 
+    Method that checks for character's vertical position. 
     Whenever the player is touching the ground, 'self.touchdown' is set to True.
-    Whenever player is airborne, 'self.touchdown' is set to False.
+    Whenever player proceeds to press the SPACE button, 'self.touchdown' is set to False.
     The main movement of the character's apparatus is changing according to this variable
     """
-    def check_collision(self, platform_list):
+    def check_vertical_collision(self, platforms, hitbox):
+        for platform in platforms:
+            if hitbox.colliderect(platform) and self.jump == False:
 
-        """Conditions that set X axis boundaries of the edge of the screen"""
-        if self.img_pos[0] <= -30:
-            self.movement_x[0] = False
-        if self.img_pos[0] >= 1670:
-            self.movement_x[1] = False
+                self.img_pos[1] = platform.top - (self.image.get_height())
 
-        for platform in platform_list:
-            self.character_rect = self.image.get_rect(topleft=self.img_pos)
-
-
-            """Conditions that set Y axis"""
-            if self.character_rect.colliderect(platform) and self.jump == False:
-
-                self.img_pos[1] = platform.top - self.image.get_height()
-                self.peak = False
                 self.touchdown = True
+                self.peak = False
                 self.action, self.action_divider = 'Idle', 0
-
+                pygame.draw.rect(self.screen, (255, 0, 0,), platform)
 
                 if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
-                    self.action, self.action_divider = 'Running', 1
+                        self.action, self.action_divider = 'Running', 1
 
                 if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
-                    self.action, self.action_divider = 'Idle', 0
-            else:
-                self.touchdown = False
+                        self.action, self.action_divider = 'Idle', 0
 
 
     def update_animation(self):
@@ -207,6 +203,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         We pass 'self.action_divider' that controls the nature of the action (idle, running etc...) 
         and 'self.frame_index' which allows the animation to always start from index 0 whenever a new action is introduced to prevent a 'list index out of range'.
         """
+
         self.image = animate_character(self.action)[self.action_divider][self.frame_index]
 
         if pygame.time.get_ticks() - self.update_time > 80:
@@ -234,7 +231,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         """Once player reaches the 'self.peak', descending sequence is initialized"""
         if self.peak:
-            self.y_velocity += .2
+            self.y_velocity += .5
             self.action, self.action_divider = 'Landing', 6
             self.movement_y[0] = False
             self.movement_y[1] = True

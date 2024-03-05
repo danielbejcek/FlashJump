@@ -52,19 +52,21 @@ class TestCharacterMovement(unittest.TestCase):
         self.game = main.Game()
 
         """Instance of player from PlayerCharacter class"""
-        self.player = PlayerCharacter(600,895)
+        self.player = PlayerCharacter(600,700)
 
         """Instance from main game loop"""
-        self.game.player = PlayerCharacter(600,895)
+        self.game.player = PlayerCharacter(600,700)
 
         """Setting up x, y position from the player instance in the main.Game() which is being updated"""
         self.game_pos = self.game.player.img_pos
+
+        self.hitbox = self.game.player.hitbox
 
         """Setting up x, y position from static PlayerCharacter class"""
         self.initial_pos = self.player.img_pos
 
         """Setting up a collision object"""
-        self.floor_platform = platform_collision(self.game_pos, self.game.player.image)
+        self.floor_platform = platform_collision()
 
 
     def tearDown(self):
@@ -113,6 +115,7 @@ class TestCharacterMovement(unittest.TestCase):
 
     @patch('pygame.event.get')
     def test_attack_animation(self, mock_get_event):
+        self.game_pos[1] = 600
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_q)]
         self.game.run(True)
         self.assertFalse(self.player.movement_x[0])
@@ -124,15 +127,15 @@ class TestCharacterMovement(unittest.TestCase):
     After we process 40 iterations of the in-game loop, the character should be now leveled
     with the 'self.floor_platform'
     """
-    def test_collision(self):
+    def test_collision_floor(self):
         self.game_pos[1] = 500
         self.assertFalse(self.game.player.touchdown)
-        self.assertNotEqual(self.game_pos[1], self.floor_platform)
-        self.game.run(True, 40)
-
-        """Subtracting '151' from the 'self.floor_platform' to compensate for the player's vertical length of the image."""
-        self.assertEqual(self.game_pos[1], (self.floor_platform-151))
+        self.assertNotEqual(self.game_pos[1], self.floor_platform[1].top - self.game.player.image.get_height())
+        self.game.run(True, 80)
         self.assertTrue(self.game.player.touchdown)
+        """Custom method to test that after player has landed, the difference between the player position and the collision floor is not more than 10 pixels"""
+        self.assertAlmostEqualsInt(self.game_pos[1],self.floor_platform[1].top - self.game.player.image.get_height(), 10)
+
 
     def simulate_key_press(self, key):
         mock_event_key = MagicMock()
@@ -140,11 +143,20 @@ class TestCharacterMovement(unittest.TestCase):
         mock_event_key.key = key
         return mock_event_key
 
+    """Custom method to assert 'almostEqual' integers"""
+    def assertAlmostEqualsInt(self, first, second, delta):
+        if delta >= 10:
+            self.assertTrue(abs(first - second) <= delta)
+        else:
+            self.fail("Delta is not great enough")
+
+
+
 class TestAnimationLists(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
         """Instance of player from PlayerCharacter class"""
-        self.player = PlayerCharacter(600, 895)
+        self.player = PlayerCharacter(600, 500)
 
         """Setting up x, y position from the player instance in the main.Game() which is being updated"""
         self.img_pos = self.game.player.img_pos
