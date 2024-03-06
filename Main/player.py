@@ -68,7 +68,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
     """Creating a custom hitbox to better control the character collisions"""
     def update_hitbox(self,x,y):
-        self.hitbox = (x + 53, y + 70,55,90)
+        self.hitbox = (x + 53, y + 71,55,90)
         return self.hitbox
 
     def draw_character(self):
@@ -82,6 +82,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Y axis position"""
         self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * self.y_velocity
 
+
+
         """Main player animation loop"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -91,6 +93,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
             """Controls for player when character is touching the ground"""
             if self.touchdown == True:
                 if event.type == pygame.KEYDOWN and not any([self.bow, self.attack]):
+
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -180,21 +183,46 @@ class PlayerCharacter(pygame.sprite.Sprite):
     The main movement of the character's apparatus is changing according to this variable
     """
     def check_vertical_collision(self, platforms, hitbox):
+        """
+        self.touchdown is set to False at the beginning of the method.
+        If a collision is detected, it is set to True. If no collision occurs, it remains False.
+        Method is being updated in every frame of the loop to ensure proper collision functionality.
+        """
+        self.touchdown = False
         for platform in platforms:
-            if hitbox.colliderect(platform) and self.jump == False:
+            pygame.draw.rect(self.screen, (255, 0, 0,), platform)
 
-                self.img_pos[1] = platform.top - (self.image.get_height())
+            if hitbox.colliderect(platform):
+                if self.jump == False:
+                    self.movement_y[1] = False
+                    self.img_pos[1] = platform.top - self.image.get_height()
+                    self.peak = False
 
-                self.touchdown = True
-                self.peak = False
-                self.action, self.action_divider = 'Idle', 0
-                pygame.draw.rect(self.screen, (255, 0, 0,), platform)
+
+                    self.action, self.action_divider = 'Idle', 0
+                    pygame.draw.rect(self.screen, (100, 100, 100,), platform)
 
                 if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
                         self.action, self.action_divider = 'Running', 1
 
                 if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
                         self.action, self.action_divider = 'Idle', 0
+                self.touchdown = True
+                break
+
+        if not self.touchdown:
+            """
+            If jump animation is not detected, character will now perform a 'Landing' animation,
+            as he is falling from the edge of the collision platform towards the ground.
+            """
+            if not self.jump:
+                self.movement_y[1] = True
+                self.peak = True
+                self.action, self.action_divider = 'Landing', 6
+
+
+
+
 
 
     def update_animation(self):
@@ -229,7 +257,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     self.peak = True
                     self.jump = False
 
-        """Once player reaches the 'self.peak', descending sequence is initialized"""
+        """Once player reaches the 'self.peak', descending sequence is initialized, increasing the falling speed"""
         if self.peak:
             self.y_velocity += .5
             self.action, self.action_divider = 'Landing', 6
@@ -259,12 +287,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     self.attack_animation = 'Attack_1'
 
                 """Helper conditions that allow fluent movement if any of the direction keys is pressed while performing the attack"""
-                if pygame.key.get_pressed()[pygame.K_d] and not pygame.key.get_pressed()[pygame.K_a]:
+                if pygame.key.get_pressed()[pygame.K_d] and not pygame.key.get_pressed()[pygame.K_q]:
                     self.movement_x[1] = True
                     self.motion_right = True
                     self.flip = False
 
-                if pygame.key.get_pressed()[pygame.K_a] and not pygame.key.get_pressed()[pygame.K_d]:
+                if pygame.key.get_pressed()[pygame.K_a] and not pygame.key.get_pressed()[pygame.K_q]:
                     self.movement_x[0] = True
                     self.motion_left = True
                     self.flip = True

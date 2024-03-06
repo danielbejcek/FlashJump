@@ -27,6 +27,7 @@ class Game:
             update_hitbox = self.player.update_hitbox(self.player.img_pos[0],self.player.img_pos[1])
             self.hitbox = pygame.draw.rect(self.screen, (255, 0, 0), update_hitbox, 2)
 
+
             """Method that checks for vertical collision and adjusts the character position accordingly"""
             platform = platform_collision()
             self.player.check_vertical_collision(platform, self.hitbox)

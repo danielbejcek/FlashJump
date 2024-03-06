@@ -28,7 +28,4 @@ platform_0.get_rect()
 platform_1 = pygame.image.load(img_paths['platform_1'])
 
 def draw_background():
-
     screen.blit(bg_img, (0, 0))
-    # screen.blit(platform_0,(0,900))
-    # screen.blit(platform_0,(835,900))
