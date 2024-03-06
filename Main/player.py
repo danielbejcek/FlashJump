@@ -2,7 +2,7 @@ import pygame
 import sys
 from Images.images import img_paths
 from Main.player_animation import animate_character
-from Main.collisions import platform_collision
+
 
 
 class PlayerCharacter(pygame.sprite.Sprite):
@@ -33,7 +33,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Jump animation variables"""
         self.jump = False
         self.touchdown = False
-        self.jump_height = 200
+        self.jump_height = 180
         self.jump_init_pos = None
         self.peak = False
 
@@ -194,6 +194,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
             if hitbox.colliderect(platform):
                 if self.jump == False:
+                    self.y_velocity = 8
                     self.movement_y[1] = False
                     self.img_pos[1] = platform.top - self.image.get_height()
                     self.peak = False
@@ -277,7 +278,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
                 self.attack_start_time = None
 
                 """Clears the pygame key input queue in case the 'Q' key remains pressed, preventing looping of the animation"""
-                pygame.event.clear([pygame.KEYDOWN])
+                pygame.event.clear()
 
                 """Condition that switches between two types of attack animation"""
                 if self.attack_animation == 'Attack_1':
@@ -287,16 +288,27 @@ class PlayerCharacter(pygame.sprite.Sprite):
                     self.attack_animation = 'Attack_1'
 
                 """Helper conditions that allow fluent movement if any of the direction keys is pressed while performing the attack"""
-                if pygame.key.get_pressed()[pygame.K_d] and not pygame.key.get_pressed()[pygame.K_q]:
-                    self.movement_x[1] = True
-                    self.motion_right = True
-                    self.flip = False
+                if not pygame.key.get_pressed()[pygame.K_q]:
+                    if pygame.key.get_pressed()[pygame.K_d]:
+                        self.movement_x[1] = True
+                        self.motion_right = True
+                        self.flip = False
 
-                if pygame.key.get_pressed()[pygame.K_a] and not pygame.key.get_pressed()[pygame.K_q]:
-                    self.movement_x[0] = True
-                    self.motion_left = True
-                    self.flip = True
+                    if pygame.key.get_pressed()[pygame.K_a]:
+                        self.movement_x[0] = True
+                        self.motion_left = True
+                        self.flip = True
 
+                if pygame.key.get_pressed()[pygame.K_q]:
+                    if pygame.key.get_pressed()[pygame.K_d]:
+                        self.movement_x[1] = True
+                        self.motion_right = True
+                        self.flip = False
+
+                    if pygame.key.get_pressed()[pygame.K_a]:
+                        self.movement_x[0] = True
+                        self.motion_left = True
+                        self.flip = True
 
         """Bow animation"""
         if self.bow == True:

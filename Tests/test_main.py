@@ -65,8 +65,8 @@ class TestCharacterMovement(unittest.TestCase):
         """Setting up x, y position from static PlayerCharacter class"""
         self.initial_pos = self.player.img_pos
 
-        """Setting up a collision object"""
-        self.floor_platform = platform_collision()
+        """Setting up a floor collision object"""
+        self.floor_platform = platform_collision()[1]
 
 
     def tearDown(self):
@@ -122,35 +122,12 @@ class TestCharacterMovement(unittest.TestCase):
         self.assertFalse(self.player.movement_x[1])
         self.assertTrue(self.game.player.attack)
 
-    """
-    Test how the character reacts to collision after being dropped from Y coordinate of 500.
-    After we process 40 iterations of the in-game loop, the character should be now leveled
-    with the 'self.floor_platform'
-    """
-    def test_collision_floor(self):
-        self.game_pos[1] = 500
-        self.assertFalse(self.game.player.touchdown)
-        self.assertNotEqual(self.game_pos[1], self.floor_platform[1].top - self.game.player.image.get_height())
-        self.game.run(True, 80)
-        self.assertTrue(self.game.player.touchdown)
-        """Custom method to test that after player has landed, the difference between the player position and the collision floor is not more than 10 pixels"""
-        self.assertAlmostEqualsInt(self.game_pos[1],self.floor_platform[1].top - self.game.player.image.get_height(), 10)
-
 
     def simulate_key_press(self, key):
         mock_event_key = MagicMock()
         mock_event_key.type = pygame.KEYDOWN
         mock_event_key.key = key
         return mock_event_key
-
-    """Custom method to assert 'almostEqual' integers"""
-    def assertAlmostEqualsInt(self, first, second, delta):
-        if delta >= 10:
-            self.assertTrue(abs(first - second) <= delta)
-        else:
-            self.fail("Delta is not great enough")
-
-
 
 class TestAnimationLists(unittest.TestCase):
     def setUp(self):
@@ -246,9 +223,81 @@ class TestAnimationLists(unittest.TestCase):
             self.assertEqual(len(self.game.player.arrow_quiver),0)
 
 
+class TestCollisionList(unittest.TestCase):
+    def setUp(self) -> None:
+        self.game = main.Game()
+
+        """Setting up a collision objects from 'platform_collision' function that returns a list"""
+        self.floor_platform = platform_collision()[0]
+        self.lamp_platform = platform_collision()[1]
+        self.roof_platform = platform_collision()[2]
+        self.chimney_platform = platform_collision()[3]
+        self.second_roof_platform = platform_collision()[4]
+        self.tent_platform = platform_collision()[5]
 
 
+    def tearDown(self) -> None:
+        pass
+
+    """
+    Test how the character reacts to collision after being dropped from Y coordinate to a certain type of collision object.
+    """
+    def test_collision_floor(self):
+        self.game.player.img_pos = [200,500]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.floor_platform.top - self.game.player.image.get_height())
+        self.game.run(True)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.floor_platform.top - self.game.player.image.get_height(), 5)
 
 
+    def test_collision_lamp(self):
+        self.game.player.img_pos = [1000,400]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.lamp_platform.top - self.game.player.image.get_height())
+        self.game.run(True)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.lamp_platform.top - self.game.player.image.get_height(), 5)
 
+    def test_collision_roof(self):
+        self.game.player.img_pos = [1300,300]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.roof_platform.top - self.game.player.image.get_height())
+        self.game.run(True)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.roof_platform.top - self.game.player.image.get_height(), 5)
+
+    def test_collision_chimney(self):
+        self.game.player.img_pos = [1650,50]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.chimney_platform.top - self.game.player.image.get_height())
+        self.game.run(True)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.chimney_platform.top - self.game.player.image.get_height(), 5)
+
+    def test_collision_second_roof(self):
+        self.game.player.img_pos = [1350,0]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.second_roof_platform.top - self.game.player.image.get_height())
+        self.game.run(True)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.second_roof_platform.top - self.game.player.image.get_height(), 5)
+
+    def test_collision_tent(self):
+        self.game.player.img_pos = [500,300]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.tent_platform.top - self.game.player.image.get_height())
+        self.game.run(True)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.tent_platform.top - self.game.player.image.get_height(), 5)
+
+    """
+    Custom method to test that after player has landed,
+    the difference between the player position and the collision floor is not more than 5 pixels.
+    """
+    def assertAlmostEqualsInt(self, first, second, delta):
+        if delta >= 5:
+            self.assertTrue(abs(first - second) <= delta)
+        else:
+            self.fail("Delta is not great enough")
 
