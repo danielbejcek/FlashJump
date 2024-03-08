@@ -75,7 +75,7 @@ class TestCharacterMovement(unittest.TestCase):
     @patch('pygame.event.get')
     def test_movement_jump(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_SPACE)]
-        self.game.run(True,100)
+        self.game.run(True)
         self.assertLess(self.game_pos[1],self.initial_pos[1])
         self.assertTrue(self.game.player.jump)
         self.assertFalse(self.game.player.movement_y[1])
