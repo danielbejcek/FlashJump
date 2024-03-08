@@ -52,8 +52,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         """Arrow object variables"""
         self.arrow = False
-        self.arrow_y = self.img_pos[1] - (self.image.get_height() - 30)
-        self.arrow_x = self.img_pos[0]
+        self.arrow_y = 0
+        self.arrow_x = 0
         self.arrow_direction = True
         self.arrow_quiver = []
         self.arrow_duration = 3000
@@ -193,7 +193,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         self.touchdown = False
         for platform in platforms:
-            # pygame.draw.rect(self.screen, (255, 0, 0,), platform)
+            pygame.draw.rect(self.screen, (255, 0, 0,), platform)
 
             """
             Once collision hitbox is met with one of the platform objects, 
@@ -372,6 +372,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
                 """Arrow animation"""
                 if self.arrow == True:
+                    self.arrow_x = self.img_pos[0]
+                    self.arrow_y = self.img_pos[1] + 50
                     self.create_arrow()
                     self.arrow = False
 

@@ -25,8 +25,8 @@ class Game:
 
             """Manually drawn hitbox for more responsive collision"""
             update_hitbox = self.player.update_hitbox(self.player.img_pos[0],self.player.img_pos[1])
-            # self.hitbox = pygame.draw.rect(self.screen, (255, 0, 0), update_hitbox, 1)
-            self.hitbox = pygame.Rect(update_hitbox)
+            self.hitbox = pygame.draw.rect(self.screen, (255, 0, 0), update_hitbox, 1)
+            # self.hitbox = pygame.Rect(update_hitbox)
 
 
             """Method that checks for vertical collision and adjusts the character position accordingly"""
