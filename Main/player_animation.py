@@ -45,9 +45,21 @@ def animate_character(action):
     return animation_list
 
 
+def animate_enemy(action):
+    animation_list = []
+    temp_list = []
+
+    for i in os.listdir(os.path.join(current_dir,'..','Images','Characters','Enemy',action)):
+        img = pygame.image.load(os.path.join(current_dir,'..','Images','Characters','Enemy',action,i))
+        img = pygame.transform.scale(img, (int(img.get_width() * 1.5), (int(img.get_height() * 1.5))))
+
+        # 0
+        if action == 'Idle':
+            temp_list.append(img)
+            animation_list.append(temp_list)
 
 
-
+    return animation_list
 
 
 

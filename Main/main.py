@@ -4,6 +4,7 @@ import os
 from Images.images import draw_background
 from Main.player import PlayerCharacter
 from Main.collisions import platform_collision
+from Main.enemy import EnemyCharacter
 
 
 class Game:
@@ -12,6 +13,7 @@ class Game:
         pygame.display.set_caption("FlashJump")
         self.clock = pygame.time.Clock()
         self.player = PlayerCharacter(600,700)
+        self.enemy = EnemyCharacter(500,700)
         self.screen = self.player.screen
         self.hitbox = None
 
@@ -25,8 +27,8 @@ class Game:
 
             """Manually drawn hitbox for more responsive collision"""
             update_hitbox = self.player.update_hitbox(self.player.img_pos[0],self.player.img_pos[1])
-            self.hitbox = pygame.draw.rect(self.screen, (255, 0, 0), update_hitbox, 1)
-            # self.hitbox = pygame.Rect(update_hitbox)
+            # self.hitbox = pygame.draw.rect(self.screen, (255, 0, 0), update_hitbox, 1)
+            self.hitbox = pygame.Rect(update_hitbox)
 
 
             """Method that checks for vertical collision and adjusts the character position accordingly"""
@@ -37,7 +39,11 @@ class Game:
             self.player.player_movement()
 
             """Main method for updating the character's animation (Idle, running, jumping, shooting from a bow)"""
-            self.player.update_animation()
+            self.player.update_player_animation()
+
+            """Enemy loop"""
+            self.enemy.update_enemy_animation()
+
 
 
             """Arrow object animation, method is called only when 'arrow_quiver' list is not empty"""
@@ -47,7 +53,7 @@ class Game:
             """Player character image"""
             self.player.draw_character()
 
-
+            self.enemy.draw_enemy()
             pygame.display.update()
             self.clock.tick(60)
 

@@ -8,6 +8,8 @@ from Main.player_animation import animate_character
 class PlayerCharacter(pygame.sprite.Sprite):
     screen = pygame.display.set_mode((1792, 1024))
     def __init__(self, x,y):
+
+        # super().__init__()
         pygame.sprite.Sprite.__init__(self)
         """Character is starting in an 'Idle' animation"""
         self.action = 'Idle'
@@ -193,7 +195,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         self.touchdown = False
         for platform in platforms:
-            pygame.draw.rect(self.screen, (255, 0, 0,), platform)
+            # pygame.draw.rect(self.screen, (255, 0, 0,), platform)
 
             """
             Once collision hitbox is met with one of the platform objects, 
@@ -254,7 +256,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
                 self.action, self.action_divider = 'Landing', 6
 
 
-    def update_animation(self):
+    def update_player_animation(self):
         """
         self.image controls the image generator. We are accessing the list which is returned from animate_character function.
         We pass 'self.action_divider' that controls the nature of the action (idle, running etc...) 
