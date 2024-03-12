@@ -4,13 +4,12 @@ from Images.images import img_paths
 from Main.player_animation import animate_character
 
 
-
 class PlayerCharacter(pygame.sprite.Sprite):
     screen = pygame.display.set_mode((1792, 1024))
-    def __init__(self, x,y):
+    def __init__(self):
 
-        # super().__init__()
         pygame.sprite.Sprite.__init__(self)
+
         """Character is starting in an 'Idle' animation"""
         self.action = 'Idle'
 
@@ -27,7 +26,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Main movement variables"""
         self.movement_y = [False, True]
         self.movement_x = [False, False]
-        self.img_pos = [x, y]
+        self.img_pos = [800, 500]
         self.flip = False
         self.y_velocity = 8
         self.x_velocity = 5
@@ -63,6 +62,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Hitbox"""
         self.hitbox = None
 
+
         """
         Variables that help control the movement of the character. When user presses 'Key_A' to run left and right after 'Key_D' to run right,
         character will stop and enter 'Idle' animation, until one of the keys is released.
@@ -75,7 +75,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.hitbox = (x + 63, y + 71,30,90)
         return self.hitbox
 
-    def draw_character(self):
+    def draw_player(self):
         self.screen.blit(pygame.transform.flip(self.image, self.flip, False), self.img_pos)
 
     """Main method of the player's movement apparatus"""
@@ -86,6 +86,11 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Y axis position"""
         self.img_pos[1] += (self.movement_y[1] - self.movement_y[0]) * self.y_velocity
 
+        if self.touchdown:
+            if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
+                self.action, self.action_divider = 'Running', 1
+            if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
+                self.action, self.action_divider = 'Idle', 0
 
 
         """Main player animation loop"""
@@ -96,8 +101,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
             """Controls for player when character is touching the ground"""
             if self.touchdown == True:
-                if event.type == pygame.KEYDOWN and not any([self.bow, self.attack]):
 
+                if event.type == pygame.KEYDOWN and not any([self.bow, self.attack]):
 
                     """X axis"""
                     if event.key == pygame.K_a:
@@ -105,10 +110,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         self.flip = True
                         self.motion_left = True
 
+
                     if event.key == pygame.K_d:
                         self.movement_x[1] = True
                         self.flip = False
                         self.motion_right = True
+
 
                     """Y axis"""
                     if event.key == pygame.K_SPACE:
@@ -179,82 +186,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
                         self.movement_x[1] = False
                         if self.motion_left:
                             self.flip = True
-
-    """
-    Method that checks for character's vertical position. 
-    Whenever the player is touching the ground, 'self.touchdown' is set to True.
-    Whenever player proceeds to press the SPACE button, 'self.touchdown' is set to False.
-    The main movement of the character's apparatus is changing according to this variable
-    """
-    def check_vertical_collision(self, platforms, hitbox):
-        """
-        self.touchdown is set to False at the beginning of the method.
-        If a collision is detected, it is set to True. If no collision occurs, it remains False.
-        Method is being updated in every frame of the loop to ensure proper collision functionality.
-        """
-
-        self.touchdown = False
-        for platform in platforms:
-            # pygame.draw.rect(self.screen, (255, 0, 0,), platform)
-
-            """
-            Once collision hitbox is met with one of the platform objects, 
-            vertical variables are set accordingly for the player to be able to use the platform.
-            """
-            if hitbox.colliderect(platform) and self.descent == False:
-                if self.jump == False:
-                    self.y_velocity = 8
-                    self.movement_y[1] = False
-                    self.img_pos[1] = platform.top - self.image.get_height()
-                    self.peak = False
-                    self.touchdown = True
-                    self.action, self.action_divider = 'Idle', 0
-                    # pygame.draw.rect(self.screen, (100, 100, 100,), platform)
-
-                    if pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_d]:
-                        self.action, self.action_divider = 'Running', 1
-
-                    if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]:
-                        self.action, self.action_divider = 'Idle', 0
-
-
-
-            """
-            Whenever player wants to descent and presses the 'S' key, current platform is stored in 'self.drop_platform' variable, 
-            usable only when colliding with platform -> 'self.touchdown == True'.
-            If player is on floor platform, condition will not be triggered.
-            """
-            if pygame.key.get_pressed()[pygame.K_s] and self.touchdown == True:
-                if platform == platforms[0]:
-                    self.descent = False
-                else:
-                    self.drop_platform = platform
-                    self.descent = True
-
-            """
-            Once 'self.descent' is set to True, player will disengage from the current platform and drop one level lower.
-            Once the player's hitbox is no longer within the collision range of 'self.drop_platform', 'self.descent' is again set to False
-            to allow regular collision with platforms bellow.
-            """
-            if self.descent == True:
-                if hitbox.colliderect(self.drop_platform):
-                    self.touchdown = False
-                    self.movement_y[1] = True
-                else:
-                    self.descent = False
-                    self.movement_y[1] = False
-                    self.touchdown = True
-
-        """
-        If jump animation is not detected, character will now perform a 'Landing' animation,
-        as he is falling from the edge of the collision platform towards the ground.
-        """
-        if not self.touchdown:
-            if not self.jump:
-                self.movement_y[1] = True
-                self.peak = True
-                self.action, self.action_divider = 'Landing', 6
-
 
     def update_player_animation(self):
         """

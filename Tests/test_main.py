@@ -160,7 +160,7 @@ class TestAnimationLists(unittest.TestCase):
 
         mock_flip.return_value = self.mock_surface
 
-        self.player.draw_character()
+        self.player.draw_player()
         mock_flip.assert_called_with(self.player.image, self.player.flip, False)
         self.player.screen.blit.assert_called_with(self.mock_surface, self.player.img_pos)
 
