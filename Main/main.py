@@ -1,6 +1,4 @@
-import sys
 import pygame
-import os
 from Images.images import draw_background
 from Main.player import PlayerCharacter
 from Main.collisions import Collisions
@@ -19,6 +17,7 @@ class Game:
         self.player_hitbox = None
         self.enemy_hitbox = None
 
+
     def run(self,test_case=False, max_iterations=50):
         """Setting up a test case scenario to a limited number of iterations"""
         iteration = 0
@@ -27,15 +26,16 @@ class Game:
             """Main images function"""
             draw_background()
 
+            current_time = pygame.time.get_ticks()
+            self.enemy.add_enemy(self.enemy,current_time)
+
             """Manually drawn hitbox for more responsive collision"""
             player_hitbox = self.player.update_hitbox(self.player.img_pos[0],self.player.img_pos[1])
-            self.player_hitbox = pygame.draw.rect(self.screen, (255, 0, 0), player_hitbox, 1)
-            # self.player_hitbox = pygame.Rect(player_hitbox)
-
+            # self.player_hitbox = pygame.draw.rect(self.screen, (255, 0, 0), player_hitbox, 1)
+            self.player_hitbox = pygame.Rect(player_hitbox)
 
             """Method that checks for vertical collision and adjusts the character position accordingly"""
             self.collide.check_vertical_collision(self.player_hitbox, self.player,type="player")
-
 
             """Controls the movement of the player character"""
             self.player.player_movement()
@@ -46,12 +46,14 @@ class Game:
 
             """Enemy loop"""
             enemy_hitbox = self.enemy.update_enemy_hitbox(self.enemy.enemy_img_pos[0], self.enemy.enemy_img_pos[1])
-            self.enemy_hitbox = pygame.draw.rect(self.screen,(255,0,0),enemy_hitbox,1)
-            # self.enemy_hitbox = pygame.Rect(enemy_hitbox)
+            enemy_hitbox_list = self.enemy.update_enemy_hitbox(self.enemy.enemy_img_pos[0], self.enemy.enemy_img_pos[1])
+            # self.enemy_hitbox = pygame.draw.rect(self.screen,(255,0,0),enemy_hitbox,1)
+            self.enemy_hitbox = pygame.Rect(enemy_hitbox)
             self.enemy.draw_enemy()
-            self.enemy.enemy_movement()
+            self.enemy.enemy_movement(self.player.img_pos,self.enemy.enemy_attack)
             self.enemy.update_enemy_animation()
             self.collide.check_vertical_collision(self.enemy_hitbox,self.enemy,type="enemy")
+
 
 
 

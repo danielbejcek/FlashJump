@@ -57,8 +57,12 @@ def animate_enemy(action):
         if action == 'Idle':
             temp_list.append(img)
             animation_list.append(temp_list)
-
-        if action == 'Landing':
+        # 1
+        if action == "Running":
+            temp_list.append(img)
+            animation_list.append(temp_list)
+        # 2
+        if action == 'Attack':
             temp_list.append(img)
             animation_list.append(temp_list)
 

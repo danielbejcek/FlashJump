@@ -62,7 +62,6 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Hitbox"""
         self.hitbox = None
 
-
         """
         Variables that help control the movement of the character. When user presses 'Key_A' to run left and right after 'Key_D' to run right,
         character will stop and enter 'Idle' animation, until one of the keys is released.

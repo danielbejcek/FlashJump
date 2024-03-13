@@ -50,7 +50,7 @@ class Collisions:
         character.touchdown = False
 
         for platform in platforms:
-            pygame.draw.rect(self.screen, (255, 0, 0,), platform)
+            # pygame.draw.rect(self.screen, (255, 0, 0,), platform)
 
             """
             Once collision hitbox is met with one of the platform objects, 
@@ -61,7 +61,7 @@ class Collisions:
                     character.enemy_touchdown = True
                     character.enemy_movement_y[1] = False
                     character.enemy_img_pos[1] = platform.top - character.enemy_image.get_height()
-                    pygame.draw.rect(self.screen, (100, 100, 100,), platform)
+                    # pygame.draw.rect(self.screen, (100, 100, 100,), platform)
 
             if type == "player":
                 if hitbox.colliderect(platform) and character.descent == False:
