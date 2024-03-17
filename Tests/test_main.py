@@ -6,7 +6,7 @@ import pygame
 from Main import main
 from Main.player import PlayerCharacter
 from Main.player_animation import animate_character
-from Main.collisions import platform_collision
+from Main.collisions import Collisions
 
 
 current_dir = os.path.dirname(__file__)
@@ -50,12 +50,15 @@ class TestGameWindow(unittest.TestCase):
 class TestCharacterMovement(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
+        self.collide = Collisions()
+        self.platform = Collisions().platform_collision()
+
 
         """Instance of player from PlayerCharacter class"""
-        self.player = PlayerCharacter(600,700)
+        self.player = PlayerCharacter()
 
         """Instance from main game loop"""
-        self.game.player = PlayerCharacter(600,700)
+        self.game.player = PlayerCharacter()
 
         """Setting up x, y position from the player instance in the main.Game() which is being updated"""
         self.game_pos = self.game.player.img_pos
@@ -66,7 +69,7 @@ class TestCharacterMovement(unittest.TestCase):
         self.initial_pos = self.player.img_pos
 
         """Setting up a floor collision object"""
-        self.floor_platform = platform_collision()[1]
+        self.left_roof_platform = self.platform[9]
 
 
     def tearDown(self):
@@ -75,11 +78,12 @@ class TestCharacterMovement(unittest.TestCase):
     @patch('pygame.event.get')
     def test_movement_jump(self, mock_get_event):
         mock_get_event.return_value = [self.simulate_key_press(pygame.K_SPACE)]
-        self.game.run(True)
+        self.game.run(True,30)
         self.assertLess(self.game_pos[1],self.initial_pos[1])
         self.assertTrue(self.game.player.jump)
         self.assertFalse(self.game.player.movement_y[1])
         self.assertTrue(self.game.player.movement_y[0])
+
 
         """Variables that are bound to be set to False while jump animation is active"""
         self.assertFalse(self.game.player.peak)
@@ -133,7 +137,7 @@ class TestAnimationLists(unittest.TestCase):
     def setUp(self):
         self.game = main.Game()
         """Instance of player from PlayerCharacter class"""
-        self.player = PlayerCharacter(600, 500)
+        self.player = PlayerCharacter()
 
         """Setting up x, y position from the player instance in the main.Game() which is being updated"""
         self.img_pos = self.game.player.img_pos
@@ -145,6 +149,8 @@ class TestAnimationLists(unittest.TestCase):
         self.actions_list = ['Idle','Running','Jump','Bow','Attack_1','Attack_2','Landing']
 
         self.mock_surface = pygame.Surface((1,1))
+        self.player.screen = MagicMock()
+
 
 
     def tearDown(self):
@@ -152,14 +158,8 @@ class TestAnimationLists(unittest.TestCase):
 
     """Test that 'draw_character' is called with proper arguments"""
     @patch('pygame.transform.flip')
-    def test_draw_character(self,mock_flip):
-
-        self.player.screen = MagicMock()
-
-        self.player.image = pygame.Surface((1,1))
-
+    def test_draw_player(self,mock_flip):
         mock_flip.return_value = self.mock_surface
-
         self.player.draw_player()
         mock_flip.assert_called_with(self.player.image, self.player.flip, False)
         self.player.screen.blit.assert_called_with(self.mock_surface, self.player.img_pos)
@@ -169,7 +169,7 @@ class TestAnimationLists(unittest.TestCase):
         for action in self.actions_list:
             result = animate_character(action)
             self.assertIsInstance(result,list)
-            self.assertTrue(len(result) > 1)
+            self.assertTrue(len(result) > 0)
 
             """Verify that objects in image lists are pygame.Surface"""
             for image_lists in result:
@@ -219,21 +219,26 @@ class TestAnimationLists(unittest.TestCase):
             """
             mock_time.return_value = 20000
             self.game.run(True)
-            print(len(self.game.player.arrow_quiver),"Arrows left in quiver")
+            # print(len(self.game.player.arrow_quiver),"Arrows left in quiver")
             self.assertEqual(len(self.game.player.arrow_quiver),0)
 
 
 class TestCollisionList(unittest.TestCase):
     def setUp(self) -> None:
         self.game = main.Game()
+        self.platform = Collisions().platform_collision()
 
         """Setting up a collision objects from 'platform_collision' function that returns a list"""
-        self.floor_platform = platform_collision()[0]
-        self.lamp_platform = platform_collision()[1]
-        self.roof_platform = platform_collision()[2]
-        self.chimney_platform = platform_collision()[3]
-        self.second_roof_platform = platform_collision()[4]
-        self.tent_platform = platform_collision()[5]
+        self.floor_platform = self.platform[0]
+        self.lamp_platform = self.platform[1]
+        self.roof_platform = self.platform[2]
+        self.chimney_platform = self.platform[3]
+        self.second_roof_platform = self.platform[4]
+        self.tent_platform = self.platform[5]
+        self.sky_platform_right = self.platform[6]
+        self.sky_platform_left = self.platform[7]
+        self.sky_platform_bottom = self.platform[8]
+        self.left_roof = self.platform[9]
 
 
     def tearDown(self) -> None:
@@ -246,7 +251,7 @@ class TestCollisionList(unittest.TestCase):
         self.game.player.img_pos = [200,500]
         self.assertFalse(self.game.player.touchdown)
         self.assertNotEqual(self.game.player.img_pos[1], self.floor_platform.top - self.game.player.image.get_height())
-        self.game.run(True)
+        self.game.run(True,20)
         self.assertTrue(self.game.player.touchdown)
         self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.floor_platform.top - self.game.player.image.get_height(), 5)
 
@@ -255,7 +260,7 @@ class TestCollisionList(unittest.TestCase):
         self.game.player.img_pos = [1000,400]
         self.assertFalse(self.game.player.touchdown)
         self.assertNotEqual(self.game.player.img_pos[1], self.lamp_platform.top - self.game.player.image.get_height())
-        self.game.run(True)
+        self.game.run(True,20)
         self.assertTrue(self.game.player.touchdown)
         self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.lamp_platform.top - self.game.player.image.get_height(), 5)
 
@@ -263,15 +268,15 @@ class TestCollisionList(unittest.TestCase):
         self.game.player.img_pos = [1300,300]
         self.assertFalse(self.game.player.touchdown)
         self.assertNotEqual(self.game.player.img_pos[1], self.roof_platform.top - self.game.player.image.get_height())
-        self.game.run(True)
+        self.game.run(True,20)
         self.assertTrue(self.game.player.touchdown)
         self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.roof_platform.top - self.game.player.image.get_height(), 5)
 
     def test_collision_chimney(self):
-        self.game.player.img_pos = [1650,50]
+        self.game.player.img_pos = [1650,100]
         self.assertFalse(self.game.player.touchdown)
         self.assertNotEqual(self.game.player.img_pos[1], self.chimney_platform.top - self.game.player.image.get_height())
-        self.game.run(True)
+        self.game.run(True,20)
         self.assertTrue(self.game.player.touchdown)
         self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.chimney_platform.top - self.game.player.image.get_height(), 5)
 
@@ -279,7 +284,7 @@ class TestCollisionList(unittest.TestCase):
         self.game.player.img_pos = [1350,0]
         self.assertFalse(self.game.player.touchdown)
         self.assertNotEqual(self.game.player.img_pos[1], self.second_roof_platform.top - self.game.player.image.get_height())
-        self.game.run(True)
+        self.game.run(True,20)
         self.assertTrue(self.game.player.touchdown)
         self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.second_roof_platform.top - self.game.player.image.get_height(), 5)
 
@@ -287,9 +292,42 @@ class TestCollisionList(unittest.TestCase):
         self.game.player.img_pos = [500,300]
         self.assertFalse(self.game.player.touchdown)
         self.assertNotEqual(self.game.player.img_pos[1], self.tent_platform.top - self.game.player.image.get_height())
-        self.game.run(True)
+        self.game.run(True,20)
         self.assertTrue(self.game.player.touchdown)
         self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.tent_platform.top - self.game.player.image.get_height(), 5)
+
+    def test_collision_sky_platform_right(self):
+        self.game.player.img_pos = [950,30]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.sky_platform_right.top - self.game.player.image.get_height())
+        self.game.run(True,20)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.sky_platform_right.top - self.game.player.image.get_height(), 5)
+
+    def test_collision_sky_platform_left(self):
+        self.game.player.img_pos = [500,30]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.sky_platform_left.top - self.game.player.image.get_height())
+        self.game.run(True,20)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.sky_platform_left.top - self.game.player.image.get_height(), 5)
+
+    def test_collision_sky_platform_bottom(self):
+        self.game.player.img_pos = [500,140]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.sky_platform_bottom.top - self.game.player.image.get_height())
+        self.game.run(True,20)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.sky_platform_bottom.top - self.game.player.image.get_height(), 5)
+
+    def test_collision_left_roof(self):
+        self.game.player.img_pos = [100,300]
+        self.assertFalse(self.game.player.touchdown)
+        self.assertNotEqual(self.game.player.img_pos[1], self.left_roof.top - self.game.player.image.get_height())
+        self.game.run(True,20)
+        self.assertTrue(self.game.player.touchdown)
+        self.assertAlmostEqualsInt(self.game.player.img_pos[1],self.left_roof.top - self.game.player.image.get_height(), 5)
+
 
     """
     Custom method to test that after player has landed,

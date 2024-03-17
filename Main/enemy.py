@@ -14,7 +14,7 @@ class EnemyCharacter(PlayerCharacter):
         self.enemy_attack_duration = 500
 
         self.enemy_touchdown = False
-        self.enemy_img_pos = [200,600]
+        self.enemy_img_pos = [50,600]
         self.enemy_movement_y = [False, True]
         self.enemy_movement_x = [False, False]
         self.enemy_x_velocity = 3
@@ -25,6 +25,7 @@ class EnemyCharacter(PlayerCharacter):
         self.enemy_list = []
         self.enemy_spawn_rate = 2000
         self.enemy_current_spawn = pygame.time.get_ticks()
+        self.enemy_collide = False
 
 
     def draw_enemy(self):
@@ -34,14 +35,16 @@ class EnemyCharacter(PlayerCharacter):
         self.hitbox = (x + 80, y + 102,30,90)
         return self.hitbox
 
-    def enemy_movement(self,player_pos,enemy_attack):
+    def enemy_movement(self,player_pos, enemy_collision):
         self.enemy_horizontal_range = [player_pos[0] - 90, player_pos[0] + 70]
 
-        enemy_attack = self.enemy_attack
+
         """X axis position"""
-        # if not self.enemy_attack:
         self.enemy_img_pos[0] += (self.enemy_movement_x[1] - self.enemy_movement_x[0]) * self.enemy_x_velocity
-        self.enemy_action, self.action_divider = "Running", 1
+        if not enemy_collision:
+            self.enemy_action, self.action_divider = "Running", 1
+        else:
+            self.enemy_action, self.action_divider = "Idle", 0
 
         """Enemy left side of the player movement"""
         if self.enemy_img_pos[0] <= self.enemy_horizontal_range[0]:
@@ -55,7 +58,8 @@ class EnemyCharacter(PlayerCharacter):
 
             """Condition that checks if the player's vertical axis matches the one of the enemy"""
             if player_pos[1] >= self.enemy_img_pos[1]:
-                print("LEFT")
+                pass
+                # print("LEFT")
 
 
         """Enemy right side of the player movement"""
@@ -70,7 +74,8 @@ class EnemyCharacter(PlayerCharacter):
 
             """Condition that checks if the player's vertical axis matches the one of the enemy"""
             if player_pos[1] >= self.enemy_img_pos[1]:
-                print("RIGHT")
+                pass
+                # print("RIGHT")
 
 
         """Y axis position"""
@@ -102,11 +107,17 @@ class EnemyCharacter(PlayerCharacter):
 
     """
     Method for adding enemies in a time oriented order. We pass 'enemy_object' and 'current_time' from main game loop as arguments.
-    Each time the 'current_time' surpasses the 'self.enemy_spawn_rate', 'enemy_object' is added to the list
+    Each time the 'current_time' value surpasses the value of 'self.enemy_spawn_rate', 'enemy_object' is added to the list
     and 'self.enemy_current_spawn' is updated with current time to maintain correct order and continuous flow of adding 'enemy_object'.
     """
-    def add_enemy(self, enemy_object, current_time):
+    def add_enemy(self,current_time):
+        self.enemy = EnemyCharacter()
+        if self.enemy_list == []:
+            self.enemy_list.append(self.enemy)
+            # print(self.enemy_list)
         if current_time - self.enemy_current_spawn > self.enemy_spawn_rate:
-            self.enemy_list.append(enemy_object)
-            self.enemy_current_spawn = current_time
+            if len(self.enemy_list) <= 1:
+                self.enemy_list.append(self.enemy)
+                self.enemy_current_spawn = current_time
+            # print(self.enemy_list)
         return self.enemy_list

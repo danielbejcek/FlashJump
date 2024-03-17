@@ -26,7 +26,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         """Main movement variables"""
         self.movement_y = [False, True]
         self.movement_x = [False, False]
-        self.img_pos = [800, 500]
+        self.img_pos = [800, 700]
         self.flip = False
         self.y_velocity = 8
         self.x_velocity = 5

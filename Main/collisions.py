@@ -36,7 +36,7 @@ class Collisions:
     Method that checks for character's vertical position. 
     Whenever the player is touching the ground, 'self.touchdown' is set to True.
     Whenever player proceeds to press the SPACE button, 'self.touchdown' is set to False.
-    The main movement of the character's apparatus is changing according to this variable
+    The main movement of the character's apparatus is changing according to this variable.
     """
     def check_vertical_collision(self,hitbox, character,type):
 
@@ -112,3 +112,32 @@ class Collisions:
                 character.movement_y[1] = True
                 character.peak = True
                 character.action, character.action_divider = 'Landing', 6
+
+    """
+    Method that checks for horizontal hitbox collision between the enemy objects.
+    Once enemies collide between themselves a small gap will be implemented to prevent image overlapping.
+    """
+    def check_horizontal_collision(self, enemy_object_list):
+        enemy_collision = False
+        for i in range(len(enemy_object_list)):
+            for j in range(i + 1, len(enemy_object_list)):
+
+                enemy1 = enemy_object_list[i]
+                enemy2 = enemy_object_list[j]
+
+                hitbox1 = pygame.Rect(enemy1.update_enemy_hitbox(enemy1.enemy_img_pos[0], enemy1.enemy_img_pos[1]))
+                hitbox2 = pygame.Rect(enemy2.update_enemy_hitbox(enemy2.enemy_img_pos[0], enemy2.enemy_img_pos[1]))
+
+
+                if hitbox2.colliderect(hitbox1):
+                    enemy_collision = True
+
+                    enemy2.enemy_movement_x = [False,False]
+                    enemy1.enemy_action, enemy1.enemy_action_divider = 'Running', 1
+                    enemy2.enemy_action, enemy2.enemy_action_divider = 'Idle', 0
+
+
+        return enemy_collision
+
+
+
