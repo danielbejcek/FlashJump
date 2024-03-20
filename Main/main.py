@@ -50,20 +50,22 @@ class Game:
                 current_time = pygame.time.get_ticks()
                 self.enemy.add_enemy(current_time)
 
-                for index, enemyPlayer in enumerate(self.enemy_list):
+                for index, enemy_player in enumerate(self.enemy_list):
 
-                    enemy_hitbox = enemyPlayer.update_enemy_hitbox(enemyPlayer.enemy_img_pos[0],enemyPlayer.enemy_img_pos[1])
+                    enemy_hitbox = enemy_player.update_enemy_hitbox(enemy_player.enemy_img_pos[0],enemy_player.enemy_img_pos[1])
                     self.enemyHitbox = pygame.Rect(enemy_hitbox)
                     """Draw hitbox"""
-                    pygame.draw.rect(self.screen, (255, 0, 0), enemy_hitbox, 1)
-
-                    enemyPlayer.draw_enemy()
-                    enemyPlayer.enemy_movement(self.player.img_pos,self.collide.check_horizontal_collision(self.enemy_list))
-                    enemyPlayer.update_enemy_animation()
-
+                    # pygame.draw.rect(self.screen, (255, 0, 0), enemy_hitbox, 1)
                     self.collide.check_horizontal_collision(self.enemy_list)
-                    self.collide.check_vertical_collision(self.enemyHitbox, enemyPlayer, type='enemy')
-                # print(self.enemy.enemy_collide)
+                    self.collide.check_vertical_collision(self.enemyHitbox, enemy_player, type='enemy')
+
+                    enemy_player.draw_enemy()
+                    enemy_player.enemy_movement(self.player.img_pos,self.collide.check_horizontal_collision(self.enemy_list))
+                    enemy_player.update_enemy_animation()
+
+
+
+
 
             """Arrow object animation, method is called only when 'arrow_quiver' list is not empty"""
             if self.player.arrow_quiver != []:

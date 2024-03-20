@@ -7,21 +7,25 @@ class EnemyCharacter(PlayerCharacter):
     def __init__(self):
         super().__init__()
         self.enemy_action, self.enemy_action_divider = 'Idle', 0
+        self.enemy_image = pygame.Surface((0, 0))
 
         """Enemy attack variables"""
         self.enemy_attack = False
         self.enemy_attack_start_time = None
         self.enemy_attack_duration = 500
 
+        """Enemy movement variable"""
         self.enemy_touchdown = False
         self.enemy_img_pos = [50,600]
         self.enemy_movement_y = [False, True]
         self.enemy_movement_x = [False, False]
         self.enemy_x_velocity = 3
         self.enemy_flip = False
-        self.enemy_image = pygame.Surface((0,0))
+
+        """Enemy attributes"""
         self.enemy_hitpoints = 100
 
+        """Multiple enemies configuration"""
         self.enemy_list = []
         self.enemy_spawn_rate = 2000
         self.enemy_current_spawn = pygame.time.get_ticks()
@@ -36,46 +40,48 @@ class EnemyCharacter(PlayerCharacter):
         return self.hitbox
 
     def enemy_movement(self,player_pos, enemy_collision):
+        """Range of player's hitbox that allows the enemies to attack once within this range"""
         self.enemy_horizontal_range = [player_pos[0] - 90, player_pos[0] + 70]
 
 
         """X axis position"""
         self.enemy_img_pos[0] += (self.enemy_movement_x[1] - self.enemy_movement_x[0]) * self.enemy_x_velocity
-        if not enemy_collision:
+        if self.enemy_movement_x[0] or self.enemy_movement_x[1]:
             self.enemy_action, self.action_divider = "Running", 1
         else:
             self.enemy_action, self.action_divider = "Idle", 0
 
-        """Enemy left side of the player movement"""
+
+        """If enemy is not within the player's left 'horizontal_range', start to move towards him"""
         if self.enemy_img_pos[0] <= self.enemy_horizontal_range[0]:
             self.enemy_flip = False
             self.enemy_movement_x[1] = True
 
-        """Condition that checks if the enemy is within the 'LEFT' side range of the player"""
+        """Condition that checks if the enemy is within the left 'horizontal_range' of the player"""
         if self.enemy_img_pos[0] > self.enemy_horizontal_range[0] and self.enemy_img_pos[0] <= player_pos[0]:
             self.enemy_movement_x[1] = False
-            self.enemy_action, self.action_divider = "Idle", 0
+
 
             """Condition that checks if the player's vertical axis matches the one of the enemy"""
             if player_pos[1] >= self.enemy_img_pos[1]:
                 pass
-                # print("LEFT")
+        #         Placeholder for enemy attack animation
 
 
-        """Enemy right side of the player movement"""
+        """If enemy is not within the player's right 'horizontal range', start to move towards him"""
         if self.enemy_img_pos[0] >= self.enemy_horizontal_range[1]:
             self.enemy_flip = True
             self.enemy_movement_x[0] = True
 
-        """Condition that checks if the enemy is within the 'RIGHT' side range of the player"""
+        """Condition that checks if the enemy is within the right 'horizontal range' of the player"""
         if self.enemy_img_pos[0] < self.enemy_horizontal_range[1] and self.enemy_img_pos[0] >= player_pos[0]:
             self.enemy_movement_x[0] = False
-            self.enemy_action, self.action_divider = "Idle", 0
+
 
             """Condition that checks if the player's vertical axis matches the one of the enemy"""
             if player_pos[1] >= self.enemy_img_pos[1]:
                 pass
-                # print("RIGHT")
+        #     Placeholder for enemy attack animation
 
 
         """Y axis position"""
@@ -116,7 +122,7 @@ class EnemyCharacter(PlayerCharacter):
             self.enemy_list.append(self.enemy)
             # print(self.enemy_list)
         if current_time - self.enemy_current_spawn > self.enemy_spawn_rate:
-            if len(self.enemy_list) <= 1:
+            if len(self.enemy_list) <= 2:
                 self.enemy_list.append(self.enemy)
                 self.enemy_current_spawn = current_time
             # print(self.enemy_list)

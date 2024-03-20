@@ -339,3 +339,5 @@ class TestCollisionList(unittest.TestCase):
         else:
             self.fail("Delta is not great enough")
 
+class TestEnemyCharacter(unittest.TestCase):
+    pass

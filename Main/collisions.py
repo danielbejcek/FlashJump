@@ -127,15 +127,13 @@ class Collisions:
 
                 hitbox1 = pygame.Rect(enemy1.update_enemy_hitbox(enemy1.enemy_img_pos[0], enemy1.enemy_img_pos[1]))
                 hitbox2 = pygame.Rect(enemy2.update_enemy_hitbox(enemy2.enemy_img_pos[0], enemy2.enemy_img_pos[1]))
+                pygame.draw.rect(self.screen, (255, 0, 0), hitbox1, 1)
+                pygame.draw.rect(self.screen, (0, 0, 0), hitbox2, 1)
 
 
                 if hitbox2.colliderect(hitbox1):
                     enemy_collision = True
-
                     enemy2.enemy_movement_x = [False,False]
-                    enemy1.enemy_action, enemy1.enemy_action_divider = 'Running', 1
-                    enemy2.enemy_action, enemy2.enemy_action_divider = 'Idle', 0
-
 
         return enemy_collision
 
