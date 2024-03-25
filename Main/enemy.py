@@ -13,6 +13,7 @@ class EnemyCharacter(PlayerCharacter):
         self.enemy_attack = False
         self.enemy_attack_start_time = None
         self.enemy_attack_duration = 500
+        self.enemy_attack_window = False
 
         """Enemy movement variable"""
         self.enemy_touchdown = False
@@ -39,7 +40,11 @@ class EnemyCharacter(PlayerCharacter):
         self.hitbox = (x + 80, y + 102,30,90)
         return self.hitbox
 
-    def enemy_movement(self,player_pos, enemy_collision):
+
+    def enemy_movement(self,player_pos):
+        """Setting up an attack window for the enemy character that constantly checks if player is within enemy's attack range"""
+        self.enemy_attack_window = False
+
         """Range of player's hitbox that allows the enemies to attack once within this range"""
         self.enemy_horizontal_range = [player_pos[0] - 90, player_pos[0] + 70]
 
@@ -62,9 +67,12 @@ class EnemyCharacter(PlayerCharacter):
             self.enemy_movement_x[1] = False
 
 
-            """Condition that checks if the player's vertical axis matches the one of the enemy"""
+            """
+            Condition that checks if the player's vertical axis matches the one of the enemy.
+            Once these conditions are met, enemy is set up for an attack sequence
+            """
             if player_pos[1] >= self.enemy_img_pos[1]:
-                pass
+                self.enemy_attack_window = True
         #         Placeholder for enemy attack animation
 
 
@@ -77,10 +85,12 @@ class EnemyCharacter(PlayerCharacter):
         if self.enemy_img_pos[0] < self.enemy_horizontal_range[1] and self.enemy_img_pos[0] >= player_pos[0]:
             self.enemy_movement_x[0] = False
 
-
-            """Condition that checks if the player's vertical axis matches the one of the enemy"""
+            """
+            Condition that checks if the player's vertical axis matches the one of the enemy.
+            Once these conditions are met, enemy is set up for an attack sequence.
+            """
             if player_pos[1] >= self.enemy_img_pos[1]:
-                pass
+                self.enemy_attack_window = True
         #     Placeholder for enemy attack animation
 
 
@@ -122,7 +132,7 @@ class EnemyCharacter(PlayerCharacter):
             self.enemy_list.append(self.enemy)
             # print(self.enemy_list)
         if current_time - self.enemy_current_spawn > self.enemy_spawn_rate:
-            if len(self.enemy_list) <= 2:
+            if len(self.enemy_list) <= 0:
                 self.enemy_list.append(self.enemy)
                 self.enemy_current_spawn = current_time
             # print(self.enemy_list)

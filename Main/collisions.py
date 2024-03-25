@@ -76,7 +76,6 @@ class Collisions:
                         # pygame.draw.rect(self.screen, (100, 100, 100,), platform)
 
 
-
             """
             Whenever player wants to descent and presses the 'S' key, current platform is stored in 'self.drop_platform' variable, 
             usable only when colliding with platform -> 'self.touchdown == True'.
@@ -117,8 +116,8 @@ class Collisions:
     Method that checks for horizontal hitbox collision between the enemy objects.
     Once enemies collide between themselves a small gap will be implemented to prevent image overlapping.
     """
-    def check_horizontal_collision(self, enemy_object_list):
-        enemy_collision = False
+    def check_horizontal_collision(self,enemy_object_list):
+
         for i in range(len(enemy_object_list)):
             for j in range(i + 1, len(enemy_object_list)):
 
@@ -130,12 +129,11 @@ class Collisions:
                 pygame.draw.rect(self.screen, (255, 0, 0), hitbox1, 1)
                 pygame.draw.rect(self.screen, (0, 0, 0), hitbox2, 1)
 
-
                 if hitbox2.colliderect(hitbox1):
-                    enemy_collision = True
+
                     enemy2.enemy_movement_x = [False,False]
 
-        return enemy_collision
 
 
-
+    def hit_register(self,player_type,attack_type):
+        pass

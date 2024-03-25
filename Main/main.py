@@ -60,8 +60,9 @@ class Game:
                     self.collide.check_vertical_collision(self.enemyHitbox, enemy_player, type='enemy')
 
                     enemy_player.draw_enemy()
-                    enemy_player.enemy_movement(self.player.img_pos,self.collide.check_horizontal_collision(self.enemy_list))
+                    enemy_player.enemy_movement(self.player.img_pos)
                     enemy_player.update_enemy_animation()
+
 
 
 
@@ -71,9 +72,12 @@ class Game:
             if self.player.arrow_quiver != []:
                 self.player.draw_arrow()
 
+            # print(self.enemy.enemy_hitpoints)
+            # if self.player.attack_register:
+            #     print(self.player.attack_register)
+
             """Player character image"""
             self.player.draw_player()
-
 
             pygame.display.update()
             self.clock.tick(60)
