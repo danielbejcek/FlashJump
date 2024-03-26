@@ -12,7 +12,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.player = PlayerCharacter()
         self.enemy = EnemyCharacter()
-        self.collide = Collisions()
+        self.collision = Collisions()
         self.screen = self.player.screen
         self.player_hitbox = None
         self.enemy_hitbox = None
@@ -23,11 +23,10 @@ class Game:
         """Setting up a test case scenario to a limited number of iterations"""
         iteration = 0
 
+
         while True and iteration < max_iterations:
             """Main images function"""
             draw_background()
-
-
 
             """Manually drawn hitbox for more responsive collision"""
             player_hitbox = self.player.update_hitbox(self.player.img_pos[0],self.player.img_pos[1])
@@ -36,12 +35,12 @@ class Game:
             self.player_hitbox = pygame.draw.rect(self.screen, (255, 0, 0), player_hitbox, 1)
 
             """Method that checks for vertical collision and adjusts the character position accordingly"""
-            self.collide.check_vertical_collision(self.player_hitbox, self.player,type="player")
+            self.collision.check_vertical_collision(self.player_hitbox, self.player,type="player")
 
             """Controls the movement of the player character"""
             self.player.player_movement()
 
-            """Main method for updating the character's animation (Idle, running, jumping, shooting from a bow)"""
+            """Main method for updating the character's animation (Idle, running, jumping, attacking, shooting from a bow)"""
             self.player.update_player_animation()
 
 
@@ -51,30 +50,28 @@ class Game:
                 self.enemy.add_enemy(current_time)
 
                 for index, enemy_player in enumerate(self.enemy_list):
+                    """Enemy hitbox"""
+                    hitbox = enemy_player.update_enemy_hitbox(enemy_player.enemy_img_pos[0],enemy_player.enemy_img_pos[1])
+                    self.enemy_hitbox = pygame.Rect(hitbox)
 
-                    enemy_hitbox = enemy_player.update_enemy_hitbox(enemy_player.enemy_img_pos[0],enemy_player.enemy_img_pos[1])
-                    self.enemyHitbox = pygame.Rect(enemy_hitbox)
                     """Draw hitbox"""
                     # pygame.draw.rect(self.screen, (255, 0, 0), enemy_hitbox, 1)
-                    self.collide.check_horizontal_collision(self.enemy_list)
-                    self.collide.check_vertical_collision(self.enemyHitbox, enemy_player, type='enemy')
 
+                    """Collision types for enemy player"""
+                    self.collision.check_horizontal_collision(self.enemy_list)
+                    self.collision.check_vertical_collision(self.enemy_hitbox, enemy_player, type='enemy')
+                    self.enemy.hit_register(enemy_player, self.player.melee_attack_register, type='enemy')
+
+
+                    """Enemy animation and movement"""
                     enemy_player.draw_enemy()
                     enemy_player.enemy_movement(self.player.img_pos)
                     enemy_player.update_enemy_animation()
-
-
-
-
-
 
             """Arrow object animation, method is called only when 'arrow_quiver' list is not empty"""
             if self.player.arrow_quiver != []:
                 self.player.draw_arrow()
 
-            # print(self.enemy.enemy_hitpoints)
-            # if self.player.attack_register:
-            #     print(self.player.attack_register)
 
             """Player character image"""
             self.player.draw_player()

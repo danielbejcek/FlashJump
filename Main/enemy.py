@@ -130,10 +130,20 @@ class EnemyCharacter(PlayerCharacter):
         self.enemy = EnemyCharacter()
         if self.enemy_list == []:
             self.enemy_list.append(self.enemy)
-            # print(self.enemy_list)
+
         if current_time - self.enemy_current_spawn > self.enemy_spawn_rate:
             if len(self.enemy_list) <= 0:
                 self.enemy_list.append(self.enemy)
                 self.enemy_current_spawn = current_time
-            # print(self.enemy_list)
+
         return self.enemy_list
+
+
+
+    def hit_register(self,character,melee_attack_register,type):
+        character.enemy_hitpoints = self.enemy_hitpoints
+        if type == "enemy":
+            if character.enemy_attack_window and melee_attack_register:
+                character.enemy_hitpoints -= 50
+
+        print(character.enemy_hitpoints)

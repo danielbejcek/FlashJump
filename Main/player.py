@@ -47,7 +47,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         """Attack animation variables"""
         self.attack = False
-        self.attack_register = False
+        self.melee_attack_register = False
         self.attack_animation = 'Attack_1'
         self.attack_start_time = None
         self.attack_duration = 700
@@ -235,13 +235,13 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
             """Condition that sets the time window for the attack, when it can be actually registered as a hit"""
             if 300 < pygame.time.get_ticks() - self.attack_start_time < 320:
-                self.attack_register = True
+                self.melee_attack_register = True
 
             """Condition is triggered after the attack animation is finished"""
             if pygame.time.get_ticks() - self.attack_start_time > self.attack_duration:
                 self.attack = False
                 self.attack_start_time = None
-                self.attack_register = False
+                self.melee_attack_register = False
 
 
                 """Clears the pygame key input queue in case the 'Q' key remains pressed, preventing looping of the animation"""

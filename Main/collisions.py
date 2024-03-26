@@ -130,10 +130,9 @@ class Collisions:
                 pygame.draw.rect(self.screen, (0, 0, 0), hitbox2, 1)
 
                 if hitbox2.colliderect(hitbox1):
-
                     enemy2.enemy_movement_x = [False,False]
 
 
 
-    def hit_register(self,player_type,attack_type):
-        pass
+
+
