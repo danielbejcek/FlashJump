@@ -44,29 +44,32 @@ class Game:
             self.player.update_player_animation()
 
 
-            """Enemy loop"""
+            """Enemies loop"""
             if not test_case:
                 current_time = pygame.time.get_ticks()
                 self.enemy.add_enemy(current_time)
 
                 for index, enemy_player in enumerate(self.enemy_list):
-                    """Enemy hitbox"""
-                    hitbox = enemy_player.update_enemy_hitbox(enemy_player.enemy_img_pos[0],enemy_player.enemy_img_pos[1])
-                    self.enemy_hitbox = pygame.Rect(hitbox)
+                    if not enemy_player.enemy_dead:
+                        """Enemy hitbox"""
+                        hitbox = enemy_player.update_enemy_hitbox(enemy_player.enemy_img_pos[0],enemy_player.enemy_img_pos[1])
+                        self.enemy_hitbox = pygame.Rect(hitbox)
 
-                    """Draw hitbox"""
-                    # pygame.draw.rect(self.screen, (255, 0, 0), enemy_hitbox, 1)
+                        """Draw hitbox"""
+                        # pygame.draw.rect(self.screen, (255, 0, 0), enemy_hitbox, 1)
 
-                    """Collision types for enemy player"""
-                    self.collision.check_horizontal_collision(self.enemy_list)
-                    self.collision.check_vertical_collision(self.enemy_hitbox, enemy_player, type='enemy')
-                    self.enemy.hit_register(enemy_player, self.player.melee_attack_register, type='enemy')
+                        """Collision types for enemy player"""
+                        self.collision.check_horizontal_collision(self.enemy_list)
+                        self.collision.check_vertical_collision(self.enemy_hitbox, enemy_player, type='enemy')
+                        self.enemy.hit_register(enemy_player, self.player, type='enemy')
 
+                        print(enemy_player.enemy_hitpoints)
 
-                    """Enemy animation and movement"""
-                    enemy_player.draw_enemy()
-                    enemy_player.enemy_movement(self.player.img_pos)
-                    enemy_player.update_enemy_animation()
+                        """Enemy animation and movement"""
+
+                        enemy_player.draw_enemy()
+                        enemy_player.enemy_movement(self.player.img_pos)
+                        enemy_player.update_enemy_animation()
 
             """Arrow object animation, method is called only when 'arrow_quiver' list is not empty"""
             if self.player.arrow_quiver != []:

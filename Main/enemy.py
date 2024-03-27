@@ -24,7 +24,9 @@ class EnemyCharacter(PlayerCharacter):
         self.enemy_flip = False
 
         """Enemy attributes"""
+        self.enemy_dead = False
         self.enemy_hitpoints = 100
+
 
         """Multiple enemies configuration"""
         self.enemy_list = []
@@ -132,7 +134,7 @@ class EnemyCharacter(PlayerCharacter):
             self.enemy_list.append(self.enemy)
 
         if current_time - self.enemy_current_spawn > self.enemy_spawn_rate:
-            if len(self.enemy_list) <= 0:
+            if len(self.enemy_list) <= 1:
                 self.enemy_list.append(self.enemy)
                 self.enemy_current_spawn = current_time
 
@@ -140,10 +142,15 @@ class EnemyCharacter(PlayerCharacter):
 
 
 
-    def hit_register(self,character,melee_attack_register,type):
-        character.enemy_hitpoints = self.enemy_hitpoints
+    def hit_register(self,enemy,player,type):
         if type == "enemy":
-            if character.enemy_attack_window and melee_attack_register:
-                character.enemy_hitpoints -= 50
+            if enemy.enemy_attack_window and player.melee_attack_register and player.hit_flag:
+                enemy.enemy_hitpoints -= 50
+                player.hit_flag = False
+                if enemy.enemy_hitpoints == 0:
+                    self.remove_enemy(enemy)
 
-        print(character.enemy_hitpoints)
+
+    def remove_enemy(self,enemy_player):
+        enemy_player.enemy_dead = True
+        print(f"{enemy_player}: dead")
